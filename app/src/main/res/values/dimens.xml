@@ -1,0 +1,24 @@
+<resources>
+<dimen name="fontWeight">500</dimen>
+<dimen name="textSize">22sp</dimen>
+<dimen name="textSizePlay">26sp</dimen>
+<dimen name="radius">20dp</dimen>
+<dimen name="dimside">16dp</dimen>
+<dimen name="dimsidebutton">16dp</dimen>
+<dimen name="dimtopboxbutton">24dp</dimen>
+<dimen name="dimbottomboxbutton">28dp</dimen>
+<dimen name="fontSet2">26sp</dimen>
+<dimen name="out16">16dp</dimen>
+    <dimen name="textSizeBack">16sp</dimen>
+    <dimen name="sizeTopTextPlay">15dp</dimen>
+    <dimen name="sizeBotTextPlay">15dp</dimen>
+    <dimen name="dimBotSet2">24dp</dimen>
+    <dimen name="butTopBotGreen">21dp</dimen>
+    <dimen name="testSizeSetting">22sp</dimen>
+    <dimen name="testSizeSetting2">16sp</dimen>
+    <dimen name="iconRightSetting">12dp</dimen>
+    <dimen name="iconRightGreen">6dp</dimen>
+    <dimen name="sizeRightSetting">12dp</dimen>
+
+
+</resources>
