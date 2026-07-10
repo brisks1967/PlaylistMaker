@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
+// Изменение для теста GIT HUB - потом удалить
 
     }
 
