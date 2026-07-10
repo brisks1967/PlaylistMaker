@@ -11,7 +11,6 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity"
     android:background="@color/tint"
-
     >
 
     <LinearLayout
@@ -57,43 +56,14 @@
 
         </LinearLayout>
 
-
-        <!-- Кнопка Зеленая-->
-
-
-        <!-- ================================================   -->
-        <!-- Кнопка Поделиться приложением-->
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switch_theme"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimBotSet2"
-            android:backgroundTint="@color/tint"
-            android:checked="true"
-            android:drawableEnd="@drawable/sw"
-
-            android:gravity="start|center_vertical"
-            android:paddingStart="@dimen/dimsidebutton"
-            android:paddingTop="@dimen/butTopBotGreen"
-
-
-            android:paddingEnd="@dimen/iconRightGreen"
-            android:paddingBottom="@dimen/butTopBotGreen"
-            android:text="@string/temaBlack"
-
-            android:textAllCaps="false"
-            android:textColor="@color/black"
-            android:textSize="@dimen/testSizeSetting2"
-
-            />
-
+        <!-- Кнопка Зеленая-2-->
         <LinearLayout
-            android:id="@+id/send"
+            android:id="@+id/switch_theme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/tint"
             android:orientation="horizontal"
+            android:layout_marginTop="@dimen/dimBotSet2"
             >
 
             <TextView
@@ -106,24 +76,57 @@
                 android:textSize="@dimen/testSizeSetting2"
                 android:textColor="@color/black"
                 android:textAllCaps="false"
-                android:text="@string/send"
+                android:text="@string/temaBlack"
                 android:layout_marginStart="@dimen/out16"
                 android:gravity="center_vertical"/>
 
 
 
-            <ImageView
-
-                android:src="@drawable/send"
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/iconRightSetting" />
+                android:backgroundTint="@color/tint"
+                android:checked="true"
+                android:drawableEnd="@drawable/sw"
+                android:drawablePadding="@dimen/iconRightGreen"
+                />
+
         </LinearLayout>
 
 
+        <!-- Кнопка Поделиться приложением-->
+               <LinearLayout
+                   android:id="@+id/send"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:backgroundTint="@color/tint"
+                   android:orientation="horizontal"
+                   >
+
+                   <TextView
+                       android:layout_width="0dp"
+                       android:layout_height="match_parent"
+                       android:paddingTop="@dimen/butTopBotGreen"
+                       android:paddingBottom="@dimen/butTopBotGreen"
+                       android:layout_weight="1"
+
+                       android:textSize="@dimen/testSizeSetting2"
+                       android:textColor="@color/black"
+                       android:textAllCaps="false"
+                       android:text="@string/send"
+                       android:layout_marginStart="@dimen/out16"
+                       android:gravity="center_vertical"/>
 
 
-        <!-- Кнопка Написать в поддержку-->
+                   <ImageView
+
+                       android:src="@drawable/send"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"
+                       android:layout_marginEnd="@dimen/iconRightSetting" />
+               </LinearLayout>
+
+               <!-- Кнопка Написать в поддержку-->
 
         <LinearLayout
                 android:id="@+id/support"
@@ -131,7 +134,6 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/tint"
             android:orientation="horizontal"
-
             >
 
             <TextView
@@ -156,11 +158,8 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/support"
                 android:layout_marginEnd="@dimen/iconRightSetting"
-
                 />
         </LinearLayout>
-
-
 
         <!-- Кнопка Пользовательское соглашение-->
 
@@ -192,31 +191,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:src="@drawable/accept"
-                android:layout_marginEnd="@dimen/iconRightSetting"
-/>
+                android:layout_marginEnd="@dimen/iconRightSetting"/>
         </LinearLayout>
 
 
-
     </LinearLayout>
-    <!-- Кнопка Назад-->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_back"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/out16"
-        android:paddingBottom="@dimen/out16"
-        android:backgroundTint="@color/tint"
-        android:text="@string/back"
-        android:textSize="@dimen/textSizeBack"
-        android:textColor="@color/black"
-        android:textAllCaps="false"
-        app:icon="@drawable/ic_back"
-        app:iconTint="@color/white"
-        app:iconPadding="5dp"
-        app:iconGravity="textStart"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
 
-        />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.LinearLayout
 import com.google.android.material.button.MaterialButton
 
 
@@ -17,11 +19,11 @@ class SettingsActivity : Activity()  {
 
 
             // Обработка кнопки «Назад»
-            val backButton = findViewById<MaterialButton>(R.id.btn_back)
+            val backButton = findViewById<LinearLayout>(R.id.btn_settings)
 
             backButton.setOnClickListener {
                 val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+
                 finish()
             }
 
