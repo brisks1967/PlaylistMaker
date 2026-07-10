@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity"
+    android:background="@color/tint"
+    >
+
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+         >
+
+        <!-- Кнопка - Настройки-->
+
+
+        <LinearLayout
+            android:id="@+id/btn_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="horizontal"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/dir"
+                app:tint="@color/white"
+                android:layout_gravity="center_vertical"
+                android:gravity="start" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/sizeTopTextPlay"
+                android:paddingBottom="@dimen/sizeBotTextPlay"
+                android:paddingStart="@dimen/sizeRightSetting"
+
+                android:text="@string/setting"
+                android:textSize="@dimen/fontSet2"
+                android:textColor="@color/black"
+                android:textAllCaps="false"/>
+
+
+        </LinearLayout>
+
+        <!-- Кнопка Зеленая-2-->
+        <LinearLayout
+            android:id="@+id/switch_theme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/tint"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/dimBotSet2"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/butTopBotGreen"
+                android:paddingBottom="@dimen/butTopBotGreen"
+                android:layout_weight="1"
+
+                android:textSize="@dimen/testSizeSetting2"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:text="@string/temaBlack"
+                android:layout_marginStart="@dimen/out16"
+                android:gravity="center_vertical"/>
+
+
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/tint"
+                android:checked="true"
+                android:drawableEnd="@drawable/sw"
+                android:drawablePadding="@dimen/iconRightGreen"
+                />
+
+        </LinearLayout>
+
+
+        <!-- Кнопка Поделиться приложением-->
+               <LinearLayout
+                   android:id="@+id/send"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:backgroundTint="@color/tint"
+                   android:orientation="horizontal"
+                   >
+
+                   <TextView
+                       android:layout_width="0dp"
+                       android:layout_height="match_parent"
+                       android:paddingTop="@dimen/butTopBotGreen"
+                       android:paddingBottom="@dimen/butTopBotGreen"
+                       android:layout_weight="1"
+
+                       android:textSize="@dimen/testSizeSetting2"
+                       android:textColor="@color/black"
+                       android:textAllCaps="false"
+                       android:text="@string/send"
+                       android:layout_marginStart="@dimen/out16"
+                       android:gravity="center_vertical"/>
+
+
+                   <ImageView
+
+                       android:src="@drawable/send"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"
+                       android:layout_marginEnd="@dimen/iconRightSetting" />
+               </LinearLayout>
+
+               <!-- Кнопка Написать в поддержку-->
+
+        <LinearLayout
+                android:id="@+id/support"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/tint"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/butTopBotGreen"
+                android:paddingBottom="@dimen/butTopBotGreen"
+                android:layout_weight="1"
+
+                android:textSize="@dimen/testSizeSetting2"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:text="@string/support"
+                android:layout_marginStart="@dimen/out16"
+                android:gravity="center_vertical"
+                />
+
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/support"
+                android:layout_marginEnd="@dimen/iconRightSetting"
+                />
+        </LinearLayout>
+
+        <!-- Кнопка Пользовательское соглашение-->
+
+        <LinearLayout
+            android:id="@+id/accept"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/tint"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/butTopBotGreen"
+                android:paddingBottom="@dimen/butTopBotGreen"
+                android:layout_weight="1"
+
+                android:textSize="@dimen/testSizeSetting2"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:text="@string/accept"
+                android:layout_marginStart="@dimen/out16"
+                android:gravity="center_vertical"/>
+
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/accept"
+                android:layout_marginEnd="@dimen/iconRightSetting"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

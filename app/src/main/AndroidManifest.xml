@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PlaylistMaker">
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -20,6 +21,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+
+        <activity
+            android:name=".SearchActivity"
+            android:exported="false"
+            android:label="Поиск">
+
+        </activity>
+
+        <activity
+            android:name=".LibActivity"
+            android:exported="false"
+            android:label="Медиатека">
+
+        </activity>
+
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="Настройки">
+
+        </activity>
+        
+        
     </application>
 
 </manifest>
+
+
