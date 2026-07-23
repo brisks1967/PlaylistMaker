@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <style name="MessageTextStyle">
+        <item name="android:layout_gravity">start</item>
+        <item name="android:textColor">@color/tint</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">@font/ys_text_medium</item>
+
+    </style>
+    <style name="ariaButtonMain">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    <style name="insideButtonMain">
+        <item name="backgroundTint">@color/tint</item>
+        <item name="cornerRadius">@dimen/radius</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">5dp</item>
+        <item name="iconTint">@color/white</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/textSize</item>
+        <item name="android:fontWeight">@dimen/fontWeight</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+
+
+    </style>
+
+    <style name="buttonSettings">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:backgroundTint">@color/backgroundSetting</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+
+    </style>
+
+    <style name="insideButtonSettings">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/butTopBotGreen</item>
+        <item name="android:paddingBottom">@dimen/butTopBotGreen</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">@dimen/testSizeSetting2</item>
+        <item name="android:textColor">@color/textSetting</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_marginStart">@dimen/out16</item>
+        <item name="android:gravity">left</item>
+        <item name="android:fontFamily">@font/ys_text_regular</item>
+    </style>
+
+    <style name="imageButtonSettings">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginEnd">@dimen/iconRightSetting</item>
+        <item name="tint">@color/iconSetting</item>
+     </style>
+
+
+    <style name="MySwitchStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="android:checked">true</item>
+        <item name="android:layout_marginEnd">@dimen/iconRightSetting</item>
+         <!-- thumb (кружок) -->
+        <item name="thumbTint">@color/green</item>
+        <!-- track (дорожка) -->
+        <item name="trackTint">@color/tracGreen</item>
+    </style>
+
+
+    <style name="textSearchTop">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/sizeTopTextPlay</item>
+        <item name="android:paddingBottom">@dimen/sizeBotTextPlay</item>
+        <item name="android:paddingStart">@dimen/sizeRightSetting</item>
+        <item name="android:paddingEnd">@dimen/sizeRightSetting</item>
+    </style>
+
+    <style name="linearLayoutSearch">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+    </style>
+
+    <style name="linearLayoutSettings">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+    </style>
+
+</resources>

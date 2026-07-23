@@ -18,33 +18,34 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        val image = findViewById<MaterialButton>(R.id.search)
-        val imageClickListener: View.OnClickListener = object : View.OnClickListener {
+        // Запуск Activity  - Search  - МЕТОД 1
+        val screenSearch = findViewById<MaterialButton>(R.id.search)
+        val screenSearchClickListener: View.OnClickListener = object : View.OnClickListener {
             override fun onClick(v: View?) {
 
                 val intent = Intent(this@MainActivity, SearchActivity::class.java)
-                // Запускаем новую Activity
+                // Запускаем новую Activity Search
                 startActivity(intent)
-
-
             }
         }
 
-        image.setOnClickListener(imageClickListener)
+        screenSearch.setOnClickListener(screenSearchClickListener)
 
+// Запуск Activity  - Library - Lib  - МЕТОД 2
+        val screenLibrary = findViewById<MaterialButton>(R.id.lib)
 
-        val image3 = findViewById<MaterialButton>(R.id.lib)
-
-        image3.setOnClickListener {
+        screenLibrary.setOnClickListener {
             val intent =  Intent(this@MainActivity, LibActivity::class.java)
+            // Запускаем новую Activity Library - Lib
             startActivity(intent)
         }
 
+// Запуск Activity  - Settings  - МЕТОД 2
+        val screenSettings = findViewById<MaterialButton>(R.id.settings)
 
-        val image2 = findViewById<MaterialButton>(R.id.settings)
-
-        image2.setOnClickListener {
+        screenSettings.setOnClickListener {
             val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+            // Запускаем новую Activity Settings
             startActivity(intent)
         }
 
