@@ -53,11 +53,13 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                // Изменение фона поисковой строки - начало блока
                 if (s.isNullOrEmpty()) {
                     linearLayout.setBackgroundColor(getColor(R.color.neutral))
                 } else {
-                    linearLayout.setBackgroundColor(getColor(R.color.positive))
+                    linearLayout.setBackgroundColor(getColor(R.color.neutral))
                 }
+                // Изменение фона поисковой строки - конец блока
                 saveText = s.toString()
                 clearButton.visibility = clearButtonVisibility(s)
             }

@@ -21,5 +21,10 @@
     <dimen name="iconRightGreen">15dp</dimen>
     <dimen name="sizeRightSetting">12dp</dimen>
 
+    <dimen name="sizeTopTextSearch">10dp</dimen>
+    <dimen name="sizeBotTextSearch">12dp</dimen>
+    <dimen name="sizeTopTextPlay1">14dp</dimen>
+    <dimen name="sizeBotTextPlay1">16dp</dimen>
+
 
 </resources>
