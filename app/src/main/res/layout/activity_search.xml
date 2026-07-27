@@ -83,7 +83,10 @@
                 android:maxLines="1"
                 android:inputType="text"
                 android:textColor="@color/iconSearchBar"
-                android:textColorHint="@color/iconSearchBar" />
+                android:textColorHint="@color/iconSearchBar"
+                app:backgroundTint="@color/textOutlineSearch"
+                android:textCursorDrawable="@drawable/cursor"
+                />
 
             <ImageView
                 android:id="@+id/clearIcon"
