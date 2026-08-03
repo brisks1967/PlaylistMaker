@@ -54,7 +54,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginEnd">@dimen/iconRightSetting</item>
-        <item name="tint">@color/iconSetting</item>
+        <item name="android:tint">@color/iconSetting</item>
      </style>
 
 
@@ -88,6 +88,16 @@
 
     </style>
 
+
+    <style name="linearLayoutSearch2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+
+    </style>
+
     <style name="linearLayoutSettings">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -105,6 +115,9 @@
         <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+
     </style>
 
 
@@ -120,5 +133,6 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
+
 
 </resources>

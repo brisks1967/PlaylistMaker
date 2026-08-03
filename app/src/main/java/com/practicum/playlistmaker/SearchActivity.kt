@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.os.Bundle
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.view.inputmethod.InputMethodManager
 
 class SearchActivity : AppCompatActivity() {
     var saveText : String = ""
@@ -38,7 +40,11 @@ class SearchActivity : AppCompatActivity() {
 
         clearButton.setOnClickListener {
             inputEditText.setText("")
-         clearButton.visibility = View.GONE
+                //  clearButton.visibility = View.GONE
+
+            // Скрываем клавиатуру
+           val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
 
           // Запускаем обновление через TextWatcher
         }
@@ -77,10 +83,10 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-        override fun onSaveInstanceState(outState: Bundle) {
+     override fun onSaveInstanceState(outState: Bundle) {
             super.onSaveInstanceState(outState)
             outState.putString("EDIT_TEXT_KEY", saveText)
-        }
+     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
