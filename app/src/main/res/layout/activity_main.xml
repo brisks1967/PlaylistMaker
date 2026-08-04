@@ -22,31 +22,25 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             >
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/sizeTopTextPlay"
-        android:paddingBottom="@dimen/sizeBotTextPlay"
 
-        android:layout_gravity="start"
+        android:paddingTop="@dimen/sizeTopTextPlay1"
+        android:paddingBottom="@dimen/sizeBotTextPlay1"
+
         android:text="@string/playlist"
-        android:textSize="@dimen/textSizePlay"
-
-        android:textColor="@color/tint"
         android:fontWeight="@dimen/fontWeight"
-          />
+        style="@style/MessageTextStyle"
+        />
+       </FrameLayout>
 
 
-        </FrameLayout>
-
-
-        <!-- Далее зона кнопок -->
+       <!-- Далее зона кнопок -->
 
         <LinearLayout
-
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -57,90 +51,57 @@
             >
             <!-- Кнопка Поиск -->
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            style="@style/ariaButtonMain"
             >
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/search"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            <Button
+                android:id="@+id/search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:icon="@drawable/search"
+                android:text="@string/search"
+                style="@style/Button_MainScreen"
+                />
 
-
-            app:backgroundTint="@color/tint"
-            app:cornerRadius="@dimen/radius"
-            app:icon="@drawable/search"
-            app:iconGravity="textStart"
-            app:iconPadding="5dp"
-            app:iconTint="@color/white"
-            android:text="@string/search"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textSize"
-            android:fontWeight="@dimen/fontWeight"
-            android:textAllCaps="false"/>
         </FrameLayout>
 
             <!-- Кнопка Медиатека-->
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            style="@style/ariaButtonMain"
             android:layout_marginBottom="@dimen/dimsidebutton"
-            android:layout_marginTop="@dimen/dimsidebutton">
+            android:layout_marginTop="@dimen/dimsidebutton"
+            >
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/lib"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
-
-                app:backgroundTint="@color/tint"
-                app:cornerRadius="@dimen/radius"
                 app:icon="@drawable/lib"
-                app:iconGravity="textStart"
-                app:iconPadding="5dp"
-                app:iconTint="@color/white"
                 android:text="@string/media"
-                android:textColor="@color/black"
-                android:textSize="@dimen/textSize"
-                android:fontWeight="@dimen/fontWeight"
-                android:textAllCaps="false"/>
+                style="@style/Button_MainScreen"
+                />
+
         </FrameLayout>
 
             <!-- Кнопка Настройки-->
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-
+            style="@style/ariaButtonMain"
            >
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/settings"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
-
-                app:backgroundTint="@color/tint"
-                app:cornerRadius="@dimen/radius"
                 app:icon="@drawable/settings"
-                app:iconGravity="textStart"
-                app:iconPadding="5dp"
-                app:iconTint="@color/white"
                 android:text="@string/setting"
-                android:textColor="@color/black"
-                android:textSize="@dimen/textSize"
-                android:fontWeight="@dimen/fontWeight"
-                android:textAllCaps="false"/>
+                style="@style/Button_MainScreen"
+                />
         </FrameLayout>
 
-    </LinearLayout>
-
-
-
+        </LinearLayout>
 
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

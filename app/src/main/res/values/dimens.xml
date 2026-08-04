@@ -1,5 +1,6 @@
 <resources>
 <dimen name="fontWeight">500</dimen>
+<dimen name="fontWeightSearchBar">400</dimen>
 <dimen name="textSize">22sp</dimen>
 <dimen name="textSizePlay">26sp</dimen>
 <dimen name="radius">20dp</dimen>
@@ -19,6 +20,11 @@
     <dimen name="iconRightSetting">12dp</dimen>
     <dimen name="iconRightGreen">15dp</dimen>
     <dimen name="sizeRightSetting">12dp</dimen>
+
+    <dimen name="sizeTopTextSearch">10dp</dimen>
+    <dimen name="sizeBotTextSearch">12dp</dimen>
+    <dimen name="sizeTopTextPlay1">14dp</dimen>
+    <dimen name="sizeBotTextPlay1">16dp</dimen>
 
 
 </resources>

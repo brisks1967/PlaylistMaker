@@ -6,20 +6,19 @@
     xmlns:tools="http://schemas.android.com/tools"
 
 
-    android:id="@+id/main"
+    android:id="@+id/settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SettingsActivity"
-    android:background="@color/tint"
+    android:background="@color/backgroundSetting"
     >
 
     <LinearLayout
         android:id="@+id/buttonContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/linearLayoutSettings"
 
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
+
          >
 
         <!-- Кнопка - Настройки-->
@@ -27,17 +26,17 @@
 
         <LinearLayout
             android:id="@+id/btn_settings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/linearLayoutSettings"
 
             android:orientation="horizontal"
             >
 
             <ImageView
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/dir"
-                app:tint="@color/white"
+                android:src="@drawable/dir3"
+                app:tint="@color/iconSetting"
                 android:layout_gravity="center_vertical"
                 android:gravity="start" />
 
@@ -50,8 +49,9 @@
 
                 android:text="@string/setting"
                 android:textSize="@dimen/fontSet2"
-                android:textColor="@color/black"
-                android:textAllCaps="false"/>
+                android:textColor="@color/textSetting"
+                android:textAllCaps="false"
+                android:fontFamily="@font/ys_text_medium"/>
 
 
         </LinearLayout>
@@ -59,139 +59,91 @@
         <!-- Кнопка Зеленая-2-->
         <LinearLayout
             android:id="@+id/switch_theme"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/tint"
-            android:orientation="horizontal"
+            style="@style/buttonSettings"
+
             android:layout_marginTop="@dimen/dimBotSet2"
+
             >
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="@dimen/butTopBotGreen"
-                android:paddingBottom="@dimen/butTopBotGreen"
-                android:layout_weight="1"
-
-                android:textSize="@dimen/testSizeSetting2"
-                android:textColor="@color/black"
-                android:textAllCaps="false"
                 android:text="@string/temaBlack"
-                android:layout_marginStart="@dimen/out16"
-                android:gravity="center_vertical"/>
+                style="@style/insideButtonSettings"
 
+                />
 
 
             <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/themeSwitch"
+                style="@style/MySwitchStyle"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:backgroundTint="@color/tint"
-                android:checked="true"
-                android:drawableEnd="@drawable/sw"
-                android:drawablePadding="@dimen/iconRightGreen"
-                />
+                android:layout_height="wrap_content"
+                  />
 
         </LinearLayout>
 
 
         <!-- Кнопка Поделиться приложением-->
                <LinearLayout
-                   android:id="@+id/send"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:backgroundTint="@color/tint"
-                   android:orientation="horizontal"
+                   android:id="@+id/btn_send"
+                   style="@style/buttonSettings"
                    >
 
                    <TextView
-                       android:layout_width="0dp"
-                       android:layout_height="match_parent"
-                       android:paddingTop="@dimen/butTopBotGreen"
-                       android:paddingBottom="@dimen/butTopBotGreen"
-                       android:layout_weight="1"
-
-                       android:textSize="@dimen/testSizeSetting2"
-                       android:textColor="@color/black"
-                       android:textAllCaps="false"
                        android:text="@string/send"
-                       android:layout_marginStart="@dimen/out16"
-                       android:gravity="center_vertical"/>
+                       style="@style/insideButtonSettings"
+
+                       />
 
 
                    <ImageView
 
                        android:src="@drawable/send"
-                       android:layout_width="wrap_content"
-                       android:layout_height="match_parent"
-                       android:layout_marginEnd="@dimen/iconRightSetting" />
+                       style="@style/imageButtonSettings"/>
+
                </LinearLayout>
 
                <!-- Кнопка Написать в поддержку-->
 
         <LinearLayout
-                android:id="@+id/support"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/tint"
-            android:orientation="horizontal"
+            android:id="@+id/btn_letter"
+            style="@style/buttonSettings"
             >
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="@dimen/butTopBotGreen"
-                android:paddingBottom="@dimen/butTopBotGreen"
-                android:layout_weight="1"
-
-                android:textSize="@dimen/testSizeSetting2"
-                android:textColor="@color/black"
-                android:textAllCaps="false"
                 android:text="@string/support"
-                android:layout_marginStart="@dimen/out16"
-                android:gravity="center_vertical"
+                style="@style/insideButtonSettings"
+
                 />
 
 
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+
                 android:src="@drawable/support"
-                android:layout_marginEnd="@dimen/iconRightSetting"
+                style="@style/imageButtonSettings"
                 />
         </LinearLayout>
 
         <!-- Кнопка Пользовательское соглашение-->
 
         <LinearLayout
-            android:id="@+id/accept"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/tint"
-            android:orientation="horizontal"
+            android:id="@+id/btn_accept"
+            style="@style/buttonSettings"
             >
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="@dimen/butTopBotGreen"
-                android:paddingBottom="@dimen/butTopBotGreen"
-                android:layout_weight="1"
-
-                android:textSize="@dimen/testSizeSetting2"
-                android:textColor="@color/black"
-                android:textAllCaps="false"
                 android:text="@string/accept"
-                android:layout_marginStart="@dimen/out16"
-                android:gravity="center_vertical"/>
+                style="@style/insideButtonSettings"
+
+                />
 
 
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+
                 android:src="@drawable/accept"
-                android:layout_marginEnd="@dimen/iconRightSetting"/>
+
+                style="@style/imageButtonSettings" />
         </LinearLayout>
 
 

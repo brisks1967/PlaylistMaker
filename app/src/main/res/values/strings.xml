@@ -9,5 +9,14 @@
     <string name="send">Поделиться приложением</string>
     <string name="support">Написать в поддержку</string>
     <string name="accept">Пользовательское соглашение</string>
-    <string name="back">НАЗАД</string>
+    <string name="searchText">Поиск</string>
+    <string name="sendLink">Ссылка на курс по Андроид-разработке в Практикуме Яндекс: https://practicum.yandex/android-course</string>
+    <string name="sendAcross">Поделиться через</string>
+    <string name="writeSupport">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="writeSupport2">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="email">vashehobby@yandex.ru</string>
+    <string name="send_email">Отправка письма</string>
+    <string name="errorLetter">Не найдено приложений для отправки писем</string>
+    <string name="agreement">https://yandex.ru/legal/practicum_offer/ru/</string>
+    <string name="input_hint">Поиск</string>
 </resources>
