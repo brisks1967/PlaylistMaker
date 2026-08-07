@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import com.google.android.material.button.MaterialButton
 
@@ -18,8 +19,10 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
+
+
         // Запуск Activity  - Search  - МЕТОД 1
-        val screenSearch = findViewById<MaterialButton>(R.id.search)
+        val screenSearch = findViewById<Button>(R.id.search)
         val screenSearchClickListener: View.OnClickListener = object : View.OnClickListener {
             override fun onClick(v: View?) {
 
@@ -32,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         screenSearch.setOnClickListener(screenSearchClickListener)
 
 // Запуск Activity  - Library - Lib  - МЕТОД 2
-        val screenLibrary = findViewById<MaterialButton>(R.id.lib)
+        val screenLibrary = findViewById<Button>(R.id.lib)
 
         screenLibrary.setOnClickListener {
             val intent =  Intent(this@MainActivity, LibActivity::class.java)
@@ -41,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 // Запуск Activity  - Settings  - МЕТОД 2
-        val screenSettings = findViewById<MaterialButton>(R.id.settings)
+        val screenSettings = findViewById<Button>(R.id.settings)
 
         screenSettings.setOnClickListener {
             val intent = Intent(this@MainActivity, SettingsActivity::class.java)

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="8dp"
+    android:layout_marginStart="13dp"
+    >
+
+
+    <ImageView
+        android:id="@+id/imageTrack"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+
+        android:src="@drawable/barsik"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+
+    <TextView
+        android:id="@+id/nameTrack"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/nameTrackStyle"
+
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="Название композиции"
+        app:layout_constraintStart_toEndOf="@id/imageTrack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingLeft="8dp"
+        />
+
+
+    <TextView
+        android:id="@+id/artistTrack"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/artistTrackStyle"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="Исполнитель"
+
+        app:layout_constraintLeft_toLeftOf="@id/nameTrack"
+        app:layout_constraintTop_toBottomOf="@id/nameTrack"
+        android:paddingLeft="8dp"
+        android:layout_marginTop="1dp"
+        />
+
+    <TextView
+        android:id="@+id/durationTrack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/artistTrackStyle"
+
+        android:maxLines="1"
+        tools:text="15:15"
+        app:layout_constraintStart_toEndOf="@id/artistTrack"
+        app:layout_constraintTop_toBottomOf="@id/nameTrack"
+        android:layout_marginTop="1dp"
+        android:paddingStart="13dp"
+        />
+
+    <ImageView
+        android:id="@+id/directRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/directright"
+        app:tint="@color/artistTrack_color"
+        android:contentDescription="@null"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

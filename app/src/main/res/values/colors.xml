@@ -19,4 +19,9 @@
 	<color name="textOutlineSearch">#E6E8EB</color>
 	<color name="cursor_color">#3772E7</color>
 
+
+	<color name="nameTrack_color">#000000</color>
+	<color name="artistTrack_color">#AEAFB4</color>
+
+
 </resources>
