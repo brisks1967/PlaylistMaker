@@ -93,10 +93,6 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
 
-
-
-
-
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -122,9 +118,6 @@ class SearchActivity : AppCompatActivity() {
             myEditText.setText(restoredText)
         }
     }
-
-
-
 
 }
 

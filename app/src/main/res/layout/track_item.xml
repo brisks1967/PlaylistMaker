@@ -17,44 +17,62 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
 
-        android:src="@drawable/barsik"
+        android:src="@drawable/placeholder"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
+    <LinearLayout
+        android:id="@+id/textGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toEndOf="@id/imageTrack"
+        android:layout_marginStart="8dp"
+        app:layout_constraintTop_toTopOf="@id/imageTrack"
+        app:layout_constraintBottom_toBottomOf="@id/imageTrack">
 
     <TextView
         android:id="@+id/nameTrack"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/nameTrackStyle"
 
         android:maxLines="1"
         android:ellipsize="end"
         tools:text="Название композиции"
-        app:layout_constraintStart_toEndOf="@id/imageTrack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:paddingLeft="8dp"
         />
 
-
+    <LinearLayout
+        android:id="@+id/textGroup2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="1dp"
+         >
     <TextView
         android:id="@+id/artistTrack"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/artistTrackStyle"
         android:maxLines="1"
         android:ellipsize="end"
         tools:text="Исполнитель"
-
-        app:layout_constraintLeft_toLeftOf="@id/nameTrack"
-        app:layout_constraintTop_toBottomOf="@id/nameTrack"
-        android:paddingLeft="8dp"
-        android:layout_marginTop="1dp"
         />
+
+        <ImageView
+            android:id="@+id/dotimage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/dot"
+            app:tint="@color/artistTrack_color"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            />
 
     <TextView
         android:id="@+id/durationTrack"
@@ -64,11 +82,10 @@
 
         android:maxLines="1"
         tools:text="15:15"
-        app:layout_constraintStart_toEndOf="@id/artistTrack"
-        app:layout_constraintTop_toBottomOf="@id/nameTrack"
-        android:layout_marginTop="1dp"
-        android:paddingStart="13dp"
+
         />
+    </LinearLayout>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/directRight"

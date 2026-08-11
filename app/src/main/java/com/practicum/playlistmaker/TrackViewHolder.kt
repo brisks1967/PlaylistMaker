@@ -6,6 +6,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+
 
 class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)  {
 
@@ -19,11 +21,14 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)  {
 
     fun bind(item: Track){
 
+        val radiusDp = 2
+        val density2 = imageTrack.context.resources.displayMetrics.density
+        val radiusPx = (radiusDp * density2).toInt()
 
-
-        Glide.with(itemView)
+                Glide.with(itemView)
             .load(item.artworkUrl100)
-            .placeholder(R.drawable.barsik)
+            .placeholder(R.drawable.placeholder)
+            .transform(RoundedCorners(radiusPx)) // скругления углов
             .into(imageTrack)
 
         nameTrack.text=item.trackName

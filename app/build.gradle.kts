@@ -5,7 +5,7 @@ plugins {
 android {
     namespace = "com.practicum.playlistmaker"
     compileSdk {
-        version = release(36) {
+        version = release(37) {
             minorApiLevel = 1
         }
     }
@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.practicum.playlistmaker"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -45,8 +45,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation ("com.google.android.material:material:1.6.1")
-    implementation ("com.github.bumptech.glide:glide:4.14.2")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+    implementation (libs.material.v161)
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 
 }
