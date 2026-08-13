@@ -135,4 +135,21 @@
     </style>
 
 
+
+
+    <style name="nameTrackStyle"  >
+        <item name="android:textColor">@color/nameTrack_color</item>
+        <item name="android:textSize">@dimen/textSizeNameTrack</item>
+        <item name="android:fontFamily">@font/ys_text_regular</item>
+        <item name="android:fontWeight">@dimen/fontWeightNameTrack</item>
+    </style>
+
+    <style name="artistTrackStyle"  >
+        <item name="android:textColor">@color/artistTrack_color</item>
+        <item name="android:textSize">@dimen/textSizeArtistTrack</item>
+        <item name="android:fontFamily">@font/ys_text_regular</item>
+        <item name="android:fontWeight">@dimen/fontWeightArtistTrack</item>
+    </style>
+
+
 </resources>

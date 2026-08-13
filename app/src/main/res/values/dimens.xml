@@ -26,5 +26,10 @@
     <dimen name="sizeTopTextPlay1">14dp</dimen>
     <dimen name="sizeBotTextPlay1">16dp</dimen>
 
+    <dimen name="textSizeNameTrack">16sp</dimen>
+    <dimen name="fontWeightNameTrack">400</dimen>
+
+    <dimen name="textSizeArtistTrack">11sp</dimen>
+    <dimen name="fontWeightArtistTrack">400</dimen>
 
 </resources>

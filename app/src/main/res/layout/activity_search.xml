@@ -53,7 +53,7 @@
             android:orientation="horizontal"
 
             android:background="@drawable/circle_field"
-
+            android:layout_marginBottom="16dp"
             >
 
             <ImageView
@@ -68,31 +68,31 @@
                 android:gravity="start"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="8dp"
+
                 />
 
             <EditText
-                style="@style/Widget.AppCompat.EditText"
-
                 android:id="@+id/inputEditText"
+
+                style="@style/Widget.AppCompat.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/input_hint"
-                android:fontWeight="@dimen/fontWeightSearchBar"
+                android:background="@null"
                 android:fontFamily="@font/ys_display_regular"
-                android:textSize="16sp"
+                android:fontWeight="@dimen/fontWeightSearchBar"
+                android:hint="@string/input_hint"
+                android:inputType="text"
                 android:maxLength="25"
                 android:maxLines="1"
-                android:inputType="text"
-                android:textColor="@color/iconSearchBar"
-                android:textColorHint="@color/iconSearchBar"
-                app:backgroundTint="@color/textOutlineSearch"
-                android:textCursorDrawable="@drawable/cursor"
                 android:paddingTop="8.5dp"
                 android:paddingBottom="8.5dp"
+                android:textColor="@color/iconSearchBar"
+                android:textColorHint="@color/iconSearchBar"
+                android:textCursorDrawable="@drawable/cursor"
+                android:textSize="16sp"
 
-
-                android:background="@null"
+                app:backgroundTint="@color/textOutlineSearch"
                 />
 
             <ImageView
@@ -107,6 +107,17 @@
                 />
 
         </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/track_item"
+            tools:itemCount="4"
+            />
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

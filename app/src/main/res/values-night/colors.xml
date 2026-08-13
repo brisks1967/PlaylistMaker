@@ -16,4 +16,7 @@
 	<color name="iconSearchTop">#FFFFFF</color>
 	<color name="textOutlineSearch">#ffffff</color>
 	<color name="cursor_color">#3772E7</color>
+
+	<color name="nameTrack_color">#ffffff</color>
+	<color name="artistTrack_color">#ffffff</color>
 </resources>
