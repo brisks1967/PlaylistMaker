@@ -19,4 +19,9 @@
     <string name="errorLetter">Не найдено приложений для отправки писем</string>
     <string name="agreement">https://yandex.ru/legal/practicum_offer/ru/</string>
     <string name="input_hint">Поиск</string>
+
+
+    <string name="noFind">Ничего не нашлось</string>
+    <string name="noConnection">Проблемы со связью</string>
+    <string name="loadFail">Загрузка не удалась. Проверьте подключение к интернету</string>
 </resources>

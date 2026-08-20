@@ -32,4 +32,10 @@
     <dimen name="textSizeArtistTrack">11sp</dimen>
     <dimen name="fontWeightArtistTrack">400</dimen>
 
+    <dimen name="textSizeNoFind">19sp</dimen>
+    <dimen name="fontWeightNoFind">400</dimen>
+
+    <dimen name="textSizeNoConnection">19sp</dimen>
+    <dimen name="fontWeightNoConnection">400</dimen>
+
 </resources>

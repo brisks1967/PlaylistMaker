@@ -23,5 +23,8 @@
 	<color name="nameTrack_color">#000000</color>
 	<color name="artistTrack_color">#AEAFB4</color>
 
+	<color name="noFind_color_text">#1A1B22</color>
+	<color name="noConnection_color_text">#1A1B22</color>
+
 
 </resources>

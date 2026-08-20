@@ -19,4 +19,8 @@
 
 	<color name="nameTrack_color">#ffffff</color>
 	<color name="artistTrack_color">#ffffff</color>
+
+	<color name="noFind_color_text">#FFFFFF</color>
+	<color name="noConnection_color_text">#FFFFFF</color>
+
 </resources>
