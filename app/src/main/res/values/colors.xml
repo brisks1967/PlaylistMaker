@@ -15,10 +15,13 @@
 	<color name="backgroundSearch">#ffffff</color>
 	<color name="iconSetting">#AEAFB4</color>
 	<color name="iconSearchBar">#AEAFB4</color>
+
+	<color name="textInSearchBar">#1A1B22</color>
+	<color name="textHintSearchBar">#AEAFB4</color>
+
 	<color name="iconSearchTop">#1A1B22</color>
 	<color name="textOutlineSearch">#E6E8EB</color>
 	<color name="cursor_color">#3772E7</color>
-
 
 	<color name="nameTrack_color">#000000</color>
 	<color name="artistTrack_color">#AEAFB4</color>

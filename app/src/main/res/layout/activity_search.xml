@@ -17,7 +17,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         >
-        <!-- Кнопка - Поиск-->
+        <!-- верхняя строка - Поиск со стрелкой-->
         <LinearLayout
             android:id="@+id/containerSearchBack"
             style="@style/linearLayoutSearch2"
@@ -79,16 +79,18 @@
                 android:fontFamily="@font/ys_display_regular"
                 android:fontWeight="@dimen/fontWeightSearchBar"
                 android:hint="@string/input_hint"
+                android:textColorHint="@color/textHintSearchBar"
+
                 android:inputType="text"
+                android:textColor="@color/textInSearchBar"
+                android:textSize="16sp"
+
                 android:maxLength="25"
                 android:maxLines="1"
                 android:paddingTop="8.5dp"
                 android:paddingBottom="8.5dp"
-                android:textColor="@color/iconSearchBar"
-                android:textColorHint="@color/iconSearchBar"
-                android:textCursorDrawable="@drawable/cursor"
-                android:textSize="16sp"
 
+                android:textCursorDrawable="@drawable/cursor"
                 app:backgroundTint="@color/textOutlineSearch"
 
                 android:imeOptions="actionDone"

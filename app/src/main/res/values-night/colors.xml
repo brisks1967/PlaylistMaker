@@ -15,6 +15,10 @@
 	<color name="iconSearchBar">#1A1B22</color>
 	<color name="iconSearchTop">#FFFFFF</color>
 	<color name="textOutlineSearch">#ffffff</color>
+
+	<color name="textInSearchBar">#1A1B22</color>
+	<color name="textHintSearchBar">#1A1B22</color>
+
 	<color name="cursor_color">#3772E7</color>
 
 	<color name="nameTrack_color">#ffffff</color>
