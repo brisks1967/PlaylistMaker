@@ -10,8 +10,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 
 class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)  {
-
-
     private val imageTrack: ImageView = itemView.findViewById(R.id.imageTrack)
     private val nameTrack: TextView = itemView.findViewById(R.id.nameTrack)
     private val artistTrack: TextView = itemView.findViewById(R.id.artistTrack)
@@ -33,12 +31,12 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)  {
 
         nameTrack.text=item.trackName
         artistTrack.text=item.artistName
-        durationTrack.text=item.trackTime
-
-
+        durationTrack.text=formatDuration(item.trackTimeMillis)
     }
 
-
-
-
+    private fun formatDuration(millis: Long): String{
+        val minutes = (millis/1000) / 60
+        val seconds = (millis/1000) % 60
+        return String.format("%d:%02d", minutes, seconds)
+    }
 }

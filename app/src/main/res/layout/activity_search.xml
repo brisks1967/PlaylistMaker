@@ -17,11 +17,10 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         >
-        <!-- Кнопка - Поиск-->
+        <!-- верхняя строка - Поиск со стрелкой-->
         <LinearLayout
             android:id="@+id/containerSearchBack"
             style="@style/linearLayoutSearch2"
-
             android:orientation="horizontal"
             >
 
@@ -43,7 +42,6 @@
                 android:textColor="@color/iconSearchTop"
                 android:textAllCaps="false"
                 android:fontFamily="@font/ys_text_medium"/>
-
         </LinearLayout>
 
         <!--  Поисковая строка-->
@@ -51,7 +49,6 @@
             android:id="@+id/searchField2"
             style="@style/linearLayoutSearchField"
             android:orientation="horizontal"
-
             android:background="@drawable/circle_field"
             android:layout_marginBottom="16dp"
             >
@@ -82,17 +79,22 @@
                 android:fontFamily="@font/ys_display_regular"
                 android:fontWeight="@dimen/fontWeightSearchBar"
                 android:hint="@string/input_hint"
+                android:textColorHint="@color/textHintSearchBar"
+
                 android:inputType="text"
+                android:textColor="@color/textInSearchBar"
+                android:textSize="16sp"
+
                 android:maxLength="25"
                 android:maxLines="1"
                 android:paddingTop="8.5dp"
                 android:paddingBottom="8.5dp"
-                android:textColor="@color/iconSearchBar"
-                android:textColorHint="@color/iconSearchBar"
-                android:textCursorDrawable="@drawable/cursor"
-                android:textSize="16sp"
 
+                android:textCursorDrawable="@drawable/cursor"
                 app:backgroundTint="@color/textOutlineSearch"
+
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 />
 
             <ImageView
@@ -103,7 +105,6 @@
                 android:src="@drawable/clear"
                 android:visibility="gone"
                 app:tint="@color/iconSearchBar"
-
                 />
 
         </LinearLayout>
@@ -116,12 +117,80 @@
             tools:listitem="@layout/track_item"
             tools:itemCount="4"
             />
+        <!--  заглушка если ошибка поиска-->
+        <LinearLayout
+            android:id="@+id/emptyStateView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
 
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/nothing"
+                android:layout_marginTop="102dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/noFind"
+                style="@style/styleNoFind"
+                android:layout_marginTop="16dp"
+                />
+        </LinearLayout>
+
+        <!--  заглушка если ошибка соединения               -->
+        <LinearLayout
+            android:id="@+id/noInternet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/noint"
+                android:layout_marginTop="102dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/noConnection"
+                style="@style/styleNoConnection"
+
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/loadFail"
+                style="@style/styleNoConnection"
+
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+            />
+            <ImageView
+                android:id="@+id/resetInternet"
+                android:layout_width="91dp"
+                android:layout_height="36dp"
+                android:src="@drawable/reset"
+                android:layout_marginTop="24dp"
+                />
+        </LinearLayout>
 
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
