@@ -78,6 +78,7 @@
                 android:background="@null"
                 android:fontFamily="@font/ys_display_regular"
                 android:fontWeight="@dimen/fontWeightSearchBar"
+
                 android:hint="@string/input_hint"
                 android:textColorHint="@color/textHintSearchBar"
 
@@ -97,27 +98,67 @@
                 android:singleLine="true"
                 />
 
-            <ImageView
-                android:id="@+id/clearIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|end"
-                android:src="@drawable/clear"
-                android:visibility="gone"
-                app:tint="@color/iconSearchBar"
-                />
+                       <ImageView
+                           android:id="@+id/clearIcon"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_gravity="center_vertical|end"
+                           android:src="@drawable/clear"
+                           android:visibility="gone"
+                           app:tint="@color/iconSearchBar"
+                           />
 
-        </LinearLayout>
+                   </LinearLayout>
+
+                   <!--  История поиска-->
+    <LinearLayout
+        android:id="@+id/historyBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"  >
+
+
+         <TextView
+         android:id="@+id/historyTitle"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:paddingTop="@dimen/sizeTopTextSearch"
+         android:paddingBottom="@dimen/sizeBotTextSearch"
+         android:layout_gravity="center"
+
+             android:text="@string/youSearch"
+             android:textSize="19sp"
+             android:fontWeight="@dimen/fontWeight"
+             android:textColor="@color/iconSearchTop"
+             android:textAllCaps="false"
+             android:fontFamily="@font/ys_display_medium"
+             />
+    </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/track_item"
             tools:itemCount="4"
+            android:visibility="visible"
             />
-        <!--  заглушка если ошибка поиска-->
+
+         <ImageView
+             android:id="@+id/clearHistoryButton"
+             android:layout_width="148dp"
+             android:layout_height="36dp"
+             android:layout_gravity="center_horizontal"
+             android:src="@drawable/clear_history_button"
+             android:paddingStart="22dp"
+             android:paddingEnd="22dp"
+             android:visibility="gone" />
+
+
+         <!--  заглушка если ошибка поиска-->
         <LinearLayout
             android:id="@+id/emptyStateView"
             android:layout_width="match_parent"

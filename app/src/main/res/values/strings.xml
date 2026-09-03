@@ -24,4 +24,5 @@
     <string name="noFind">Ничего не нашлось</string>
     <string name="noConnection">Проблемы со связью</string>
     <string name="loadFail">Загрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="youSearch">Вы искали</string>
 </resources>

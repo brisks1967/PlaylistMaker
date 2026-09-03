@@ -65,6 +65,15 @@
         <item name="thumbTint">@color/green</item>
         <!-- track (дорожка) -->
         <item name="trackTint">@color/tracGreen</item>
+
+        <item name="android:paddingTop">@dimen/butTopBotGreen</item>
+        <item name="android:paddingBottom">@dimen/butTopBotGreen</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">@dimen/testSizeSetting2</item>
+        <item name="android:textColor">@color/textSetting</item>
+        <item name="android:fontFamily">@font/ys_text_regular</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_marginStart">@dimen/out16</item>
     </style>
 
 
@@ -167,6 +176,7 @@
         <item name="android:fontWeight">@dimen/fontWeightNoConnection</item>
         <item name="android:textAlignment">center</item>
     </style>
+
 
 
 </resources>

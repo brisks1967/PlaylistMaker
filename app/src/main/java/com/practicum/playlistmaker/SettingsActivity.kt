@@ -10,7 +10,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.switchmaterial.SwitchMaterial
 
+const val EDIT_TEXT_KEY = "is_dark_theme"
 
 class SettingsActivity : Activity()  {
 
@@ -28,6 +30,22 @@ class SettingsActivity : Activity()  {
                 val intent = Intent(this, MainActivity::class.java)
                 finish()
             }
+
+           // Обработка кнопки «Темная тема»
+            val sharedPrefs = getSharedPreferences(App.PRACTICUM_PREFERENCES, MODE_PRIVATE)
+
+            val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitch)
+
+            val isDarkThemeSaved = sharedPrefs.getBoolean(EDIT_TEXT_KEY, false)
+
+            themeSwitcher.setChecked(isDarkThemeSaved)
+
+            themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+                (applicationContext as App).switchTheme(checked)
+            }
+
+
+
 
             // Обработка кнопки «Поделиться приложением»
             val sendButton: LinearLayout = findViewById<LinearLayout>(R.id.btn_send)
