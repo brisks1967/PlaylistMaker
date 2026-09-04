@@ -290,10 +290,11 @@ class SearchActivity : AppCompatActivity() {
 
                             val trackForHistory = Track(
                                 trackName = track.trackName,
-                                artistName = "Из истории поиска", //  ЭТО МЕТКА  - перезапись потом
+                                artistName = track.artistName,
                                 trackTimeMillis = track.trackTimeMillis,
                                 artworkUrl100 = track.artworkUrl100,
-                                trackId = track.trackId
+                                trackId = track.trackId,
+                                mark = 1  //  ЭТО МЕТКА
                             )
 
                             loadedTracks.add(trackForHistory)
@@ -304,7 +305,6 @@ class SearchActivity : AppCompatActivity() {
 
                 override fun onFailure(call: Call<iTunesResponse>, t: Throwable) {
                     // Если трек не загрузился .....
-                    Log.d("MY_TRACK", "Трек не загрузился.... - override fun onFailure")
                 }
             })
         }
@@ -314,14 +314,13 @@ class SearchActivity : AppCompatActivity() {
 
         searchHistory.addTrack(track.trackId.toString())
 
-        if (track.artistName == "Из истории поиска") {
+        if (track.mark == 1) {
 
             performSearch(track.trackName)
             historyContainer.visibility = View.GONE
             clearHistoryButton.visibility = View.GONE
 
         } else {
-            Log.d("MY_CLICK_TEST", "Клик по обычному треку: ${track.trackName}, ID: ${track.trackId}")
         }
     }
 
