@@ -17,7 +17,6 @@
         android:id="@+id/buttonContainer"
         style="@style/linearLayoutSettings"
         android:orientation="vertical"
-
          >
 
         <!-- Верх экрана - Настройки-->
@@ -57,6 +56,7 @@
         <!-- Кнопка Зеленая-2-->
         <LinearLayout
             android:id="@+id/switch_theme"
+            android:background="@color/backgroundSetting"
             style="@style/buttonSettings"
             android:layout_marginTop="@dimen/dimBotSet2"
             >
@@ -76,6 +76,7 @@
         <!-- Кнопка Поделиться приложением-->
                <LinearLayout
                    android:id="@+id/btn_send"
+                   android:background="@color/backgroundSetting"
                    style="@style/buttonSettings"
                    >
 
@@ -97,6 +98,7 @@
 
         <LinearLayout
             android:id="@+id/btn_letter"
+            android:background="@color/backgroundSetting"
             style="@style/buttonSettings"
             >
 
@@ -119,6 +121,7 @@
 
         <LinearLayout
             android:id="@+id/btn_accept"
+            android:background="@color/backgroundSetting"
             style="@style/buttonSettings"
             >
 

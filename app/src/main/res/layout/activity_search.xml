@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SearchActivity"
-    android:background="@color/backgroundSetting">
+    android:background="@color/backgroundSearch">
 
     <LinearLayout
         android:id="@+id/buttonContainer"
@@ -147,18 +147,28 @@
             android:visibility="visible"
             />
 
-         <ImageView
-             android:id="@+id/clearHistoryButton"
-             android:layout_width="148dp"
-             android:layout_height="36dp"
-             android:layout_gravity="center_horizontal"
-             android:src="@drawable/clear_history_button"
-             android:paddingStart="22dp"
-             android:paddingEnd="22dp"
-             android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/clearHistoryButton"
+            android:layout_width="148dp"
+            android:layout_height="36dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:visibility="gone" >
+
+            <ImageView
+            android:id="@+id/historyButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/clear_history_button"
+            />
+        </FrameLayout>
 
 
-         <!--  заглушка если ошибка поиска-->
+            <!--  заглушка если ошибка поиска-->
         <LinearLayout
             android:id="@+id/emptyStateView"
             android:layout_width="match_parent"

@@ -19,9 +19,11 @@ import androidx.core.view.WindowInsetsCompat
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,7 +38,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var resetInternet: ImageView
     private lateinit var historyContainer: LinearLayout
-    private lateinit var clearHistoryButton: ImageView
+    private lateinit var clearHistoryButton: FrameLayout
     private lateinit var searchHistory: SearchHistory
 
 
@@ -69,7 +71,7 @@ class SearchActivity : AppCompatActivity() {
         historyContainer = findViewById<LinearLayout>(R.id.historyBox)
         historyContainer.visibility = View.GONE
 
-        clearHistoryButton = findViewById<ImageView>(R.id.clearHistoryButton)
+        clearHistoryButton = findViewById<FrameLayout>(R.id.clearHistoryButton)
         clearHistoryButton.visibility = View.GONE
         clearHistoryButton.setOnClickListener {
             clearHistory()
@@ -92,8 +94,6 @@ class SearchActivity : AppCompatActivity() {
         retryButton()
 
 
-
-
         // переменная linearLayout нужна была для изменения цвета фона поисковой строки - см ниже
         //   val linearLayout = findViewById<LinearLayout>(R.id.searchField2)
 
@@ -104,7 +104,6 @@ class SearchActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             finish()
         }
-
 
         clearButton.setOnClickListener {
             inputEditText.setText("")
@@ -169,9 +168,7 @@ class SearchActivity : AppCompatActivity() {
                 false  // Если это была не кнопка пуск, система разбирается
             }
         }
-
     }
-
 
     private fun performSearch(query: String) {
         if (query.isNotEmpty()) {
@@ -201,7 +198,6 @@ class SearchActivity : AppCompatActivity() {
                         recyclerView.visibility = View.GONE
                         noInternetView.visibility = View.GONE
                         trackadapter.submitList(emptyList())
-
                     }
                 }
 
@@ -240,7 +236,6 @@ class SearchActivity : AppCompatActivity() {
             }
         }
     }
-
 
      override fun onSaveInstanceState(outState: Bundle) {
             super.onSaveInstanceState(outState)
@@ -319,7 +314,6 @@ class SearchActivity : AppCompatActivity() {
             performSearch(track.trackName)
             historyContainer.visibility = View.GONE
             clearHistoryButton.visibility = View.GONE
-
         } else {
         }
     }
