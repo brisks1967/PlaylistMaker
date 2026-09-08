@@ -8,4 +8,8 @@ interface iTunesSearchAPI {
 
     @GET("/search?entity=song")
     fun searchTracks(@Query("term") text: String) : Call<iTunesResponse>
+
+    @GET("lookup")
+    fun searchTracksID(@Query("id") id: Long) : Call<iTunesResponse>
+
 }

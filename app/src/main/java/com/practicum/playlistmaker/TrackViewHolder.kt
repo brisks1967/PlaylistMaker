@@ -34,7 +34,7 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)  {
         durationTrack.text=formatDuration(item.trackTimeMillis)
     }
 
-    private fun formatDuration(millis: Long): String{
+      fun formatDuration(millis: Long): String{
         val minutes = (millis/1000) / 60
         val seconds = (millis/1000) % 60
         return String.format("%d:%02d", minutes, seconds)

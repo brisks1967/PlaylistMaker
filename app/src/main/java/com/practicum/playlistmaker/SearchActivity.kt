@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -18,9 +19,11 @@ import androidx.core.view.WindowInsetsCompat
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,24 +37,28 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var noInternetView: LinearLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var resetInternet: ImageView
+    private lateinit var historyContainer: LinearLayout
+    private lateinit var clearHistoryButton: FrameLayout
+    private lateinit var searchHistory: SearchHistory
+
 
     // Блок авторизации и подключения API начало
     private val iTunesBaseUrl = "https://itunes.apple.com"
-
     private val retrofit = Retrofit.Builder()
         .baseUrl(iTunesBaseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
     private val iTuneService = retrofit.create(iTunesSearchAPI::class.java)
 
 // Блок авторизации и подключения API - конец
 
-    private val trackadapter = TrackAdapter ()
+    private val trackadapter = TrackAdapter { clickedTrack -> handleItemClick(clickedTrack) }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
 
         //Карусель записей - начало
 
@@ -61,13 +68,31 @@ class SearchActivity : AppCompatActivity() {
 
         emptyStateView = findViewById<LinearLayout>(R.id.emptyStateView)
         noInternetView = findViewById<LinearLayout>(R.id.noInternet)
+        historyContainer = findViewById<LinearLayout>(R.id.historyBox)
+        historyContainer.visibility = View.GONE
+
+        clearHistoryButton = findViewById<FrameLayout>(R.id.clearHistoryButton)
+        clearHistoryButton.visibility = View.GONE
+        clearHistoryButton.setOnClickListener {
+            clearHistory()
+        }
+
 
         val inputEditText = findViewById<EditText>(R.id.inputEditText)
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
 
+
+        searchHistory = SearchHistory(this)
+
+        if (inputEditText.text.toString().isEmpty()) {
+            val historyIds = searchHistory.getTrackIDList()
+            loadHistoryTracksFromApi(historyIds)
+        }
+
         resetInternet = findViewById<ImageView>(R.id.resetInternet)
         resetInternet.visibility = View.GONE
         retryButton()
+
 
         // переменная linearLayout нужна была для изменения цвета фона поисковой строки - см ниже
         //   val linearLayout = findViewById<LinearLayout>(R.id.searchField2)
@@ -80,20 +105,12 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-
         clearButton.setOnClickListener {
             inputEditText.setText("")
-                //  clearButton.visibility = View.GONE
 
             // Скрываем клавиатуру
            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
-
-          // Скрываем заглушки
-            emptyStateView.visibility = View.GONE
-            recyclerView.visibility = View.GONE
-            noInternetView.visibility = View.GONE
-            trackadapter.submitList(emptyList())
 
           // Запускаем обновление через TextWatcher
         }
@@ -101,7 +118,7 @@ class SearchActivity : AppCompatActivity() {
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
 
             override fun afterTextChanged(s: Editable?) {
           //      // Изменение фона поисковой строки - начало блока
@@ -115,7 +132,21 @@ class SearchActivity : AppCompatActivity() {
                 saveText = s.toString()
                 clearButton.visibility = clearButtonVisibility(s)
 
-                performSearch(s.toString())
+
+                if (saveText.isEmpty()) {
+// если строка поиска пуста, то показываем историю
+                    historyContainer.visibility = View.VISIBLE
+                    clearHistoryButton.visibility = View.VISIBLE
+                     val historyIds = searchHistory.getTrackIDList()
+                      loadHistoryTracksFromApi(historyIds)
+
+                }else {
+   // если строка поиска заполняется пользователем, то историю убираем
+                    historyContainer.visibility = View.GONE
+                    clearHistoryButton.visibility = View.GONE
+
+                    performSearch(s.toString())
+                }
             }
         }
 
@@ -138,7 +169,6 @@ class SearchActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun performSearch(query: String) {
         if (query.isNotEmpty()) {
@@ -168,7 +198,6 @@ class SearchActivity : AppCompatActivity() {
                         recyclerView.visibility = View.GONE
                         noInternetView.visibility = View.GONE
                         trackadapter.submitList(emptyList())
-
                     }
                 }
 
@@ -208,7 +237,6 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-
      override fun onSaveInstanceState(outState: Bundle) {
             super.onSaveInstanceState(outState)
             outState.putString("EDIT_TEXT_KEY", saveText)
@@ -224,5 +252,77 @@ class SearchActivity : AppCompatActivity() {
             myEditText.setText(restoredText)
         }
     }
+// Обработка блока истории
+    private fun loadHistoryTracksFromApi(historyIds: List<String>) {
 
+        val loadedTracks = mutableListOf<Track>()
+
+        if (historyIds.isEmpty()) {
+            trackadapter.submitList(emptyList())
+            historyContainer.visibility = View.GONE
+            clearHistoryButton.visibility = View.GONE
+
+            return
+        }
+
+       historyContainer.visibility = View.VISIBLE
+        clearHistoryButton.visibility = View.VISIBLE
+
+       historyIds.forEach { idStr ->
+            val id = idStr.toLongOrNull()
+            if (id == null) return@forEach
+
+            val call = iTuneService.searchTracksID(id)
+
+            call.enqueue(object : Callback<iTunesResponse> {
+                override fun onResponse(call: Call<iTunesResponse>, response: Response<iTunesResponse>) {
+
+                    if (response.isSuccessful && response.body() != null) {
+                        val results = response.body()!!.results
+
+                        if (results.isNotEmpty()) {
+                            val track = results[0]
+
+                            val trackForHistory = Track(
+                                trackName = track.trackName,
+                                artistName = track.artistName,
+                                trackTimeMillis = track.trackTimeMillis,
+                                artworkUrl100 = track.artworkUrl100,
+                                trackId = track.trackId,
+                                mark = 1  //  ЭТО МЕТКА
+                            )
+
+                            loadedTracks.add(trackForHistory)
+                            trackadapter.submitList(loadedTracks.toList())
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<iTunesResponse>, t: Throwable) {
+                    // Если трек не загрузился .....
+                }
+            })
+        }
+    }
+
+    private fun handleItemClick(track: Track) {
+
+        searchHistory.addTrack(track.trackId.toString())
+
+        if (track.mark == 1) {
+
+            performSearch(track.trackName)
+            historyContainer.visibility = View.GONE
+            clearHistoryButton.visibility = View.GONE
+        } else {
+        }
+    }
+
+    private fun clearHistory() {
+        searchHistory.clearTrack()
+        trackadapter.submitList(emptyList())
+        historyContainer.visibility = View.GONE
+        clearHistoryButton.visibility = View.GONE
+
+    }
 }

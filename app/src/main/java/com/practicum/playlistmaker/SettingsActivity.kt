@@ -5,21 +5,21 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.switchmaterial.SwitchMaterial
 
+const val EDIT_TEXT_KEY = "is_dark_theme"
 
-class SettingsActivity : Activity()  {
-
-
+class SettingsActivity : AppCompatActivity()  {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_settings)
-
 
             // Обработка кнопки «Назад»
             val backButton = findViewById<LinearLayout>(R.id.btn_settings)
@@ -27,6 +27,21 @@ class SettingsActivity : Activity()  {
             backButton.setOnClickListener {
                 val intent = Intent(this, MainActivity::class.java)
                 finish()
+            }
+
+           // Обработка кнопки «Темная тема»
+            val sharedPrefs = getSharedPreferences(App.PRACTICUM_PREFERENCES, MODE_PRIVATE)
+
+            val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitch)
+
+            val isDarkThemeSaved = sharedPrefs.getBoolean(EDIT_TEXT_KEY, false)
+
+            themeSwitcher.setChecked(isDarkThemeSaved)
+
+            themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+
+                (applicationContext as App).switchTheme(checked)
+
             }
 
             // Обработка кнопки «Поделиться приложением»
@@ -43,14 +58,12 @@ class SettingsActivity : Activity()  {
                 writeLetter()
             }
 
-
             // Обработка кнопки «Пользовательское соглашение»
             val acceptEU: LinearLayout = findViewById<LinearLayout>(R.id.btn_accept)
 
             acceptEU.setOnClickListener {
                 readAcceptText()
             }
-
 
         }
 
@@ -62,7 +75,6 @@ class SettingsActivity : Activity()  {
                 }
                 startActivity(Intent.createChooser(letterIntent, getString(R.string.sendAcross)))
             }
-
 
 
             private fun writeLetter() {
@@ -84,6 +96,5 @@ class SettingsActivity : Activity()  {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
     }
-
 
 }

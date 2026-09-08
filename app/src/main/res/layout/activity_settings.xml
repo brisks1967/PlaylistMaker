@@ -16,13 +16,10 @@
     <LinearLayout
         android:id="@+id/buttonContainer"
         style="@style/linearLayoutSettings"
-
         android:orientation="vertical"
-
          >
 
-        <!-- Кнопка - Настройки-->
-
+        <!-- Верх экрана - Настройки-->
 
         <LinearLayout
             android:id="@+id/btn_settings"
@@ -59,25 +56,19 @@
         <!-- Кнопка Зеленая-2-->
         <LinearLayout
             android:id="@+id/switch_theme"
+            android:background="@color/backgroundSetting"
             style="@style/buttonSettings"
-
             android:layout_marginTop="@dimen/dimBotSet2"
-
             >
-
-            <TextView
-                android:text="@string/temaBlack"
-                style="@style/insideButtonSettings"
-
-                />
-
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/themeSwitch"
                 style="@style/MySwitchStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                  />
+                android:text="@string/temaBlack"
+                android:layout_marginHorizontal="60dp"
+                android:layout_gravity="start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
@@ -85,6 +76,7 @@
         <!-- Кнопка Поделиться приложением-->
                <LinearLayout
                    android:id="@+id/btn_send"
+                   android:background="@color/backgroundSetting"
                    style="@style/buttonSettings"
                    >
 
@@ -106,6 +98,7 @@
 
         <LinearLayout
             android:id="@+id/btn_letter"
+            android:background="@color/backgroundSetting"
             style="@style/buttonSettings"
             >
 
@@ -128,6 +121,7 @@
 
         <LinearLayout
             android:id="@+id/btn_accept"
+            android:background="@color/backgroundSetting"
             style="@style/buttonSettings"
             >
 
