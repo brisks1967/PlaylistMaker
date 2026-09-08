@@ -41,7 +41,7 @@ class SettingsActivity : AppCompatActivity()  {
             themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
 
                 (applicationContext as App).switchTheme(checked)
-                recreate()
+
             }
 
             // Обработка кнопки «Поделиться приложением»
