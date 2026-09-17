@@ -38,4 +38,20 @@
     <dimen name="textSizeNoConnection">19sp</dimen>
     <dimen name="fontWeightNoConnection">400</dimen>
 
+    <dimen name="textSizeTimeAP">14sp</dimen>
+    <dimen name="fontWeightTimeAP">500</dimen>
+    <dimen name="textSizeTextLeftAP">13sp</dimen>
+    <dimen name="fontWeightTextLeftAP">400</dimen>
+    <dimen name="textSizeTextRightAP">13sp</dimen>
+    <dimen name="fontWeightTextRightAP">400</dimen>
+    <dimen name="iconBackPadding">4dp</dimen>
+    <dimen name="textSizeMainAP">22sp</dimen>
+    <dimen name="fontWeightMainAP">400</dimen>
+    <dimen name="textSizeMainArtistAP">14sp</dimen>
+    <dimen name="fontWeightMainArtistAP">400</dimen>
+    <dimen name="paddingTopLeftText">9dp</dimen>
+    <dimen name="paddingBottomLeftText">8dp</dimen>
+    <dimen name="paddingTopRightText">9dp</dimen>
+    <dimen name="paddingBottomRightText">8dp</dimen>
+
 </resources>

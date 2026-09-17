@@ -49,8 +49,14 @@
             android:label="Настройки">
 
         </activity>
-        
-        
+
+        <activity
+            android:name=".AudioPlayer"
+            android:exported="true"
+            android:label="Аудио Плеер">
+        </activity>
+
+
     </application>
 
 </manifest>

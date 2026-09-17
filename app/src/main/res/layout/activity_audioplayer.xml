@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackgroundAP">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftBorder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="24dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightBorder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="24dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftBorder2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightBorder2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="16dp" />
+
+    <ImageView
+        android:id="@+id/buttonBackAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/dir3"
+        android:layout_marginStart="@dimen/iconBackPadding"
+        android:layout_marginTop="@dimen/iconBackPadding"
+        android:layout_marginBottom="@dimen/iconBackPadding"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        />
+
+    <ImageView
+        android:id="@+id/imageTrackAP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
+        android:src="@drawable/image_hint_ap"
+        app:layout_constraintTop_toBottomOf="@id/buttonBackAP"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder"
+        app:layout_constraintStart_toStartOf="@id/leftBorder"
+
+        />
+
+
+    <TextView
+        android:id="@+id/nameSongAP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
+        android:hint="@string/textNameSongHintAP"
+
+        style="@style/styleMainTextAP"
+
+        app:layout_constraintTop_toBottomOf="@id/imageTrackAP"
+        app:layout_constraintStart_toStartOf="@id/leftBorder"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder"
+        app:layout_constrainedWidth="true"
+        />
+
+    <TextView
+        android:id="@+id/nameGroupAP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constrainedWidth="true"
+        android:layout_marginTop="12dp"
+        android:hint="@string/textNameArtistHintAP"
+
+        style="@style/styleMainTextArtistAP"
+
+        app:layout_constraintTop_toBottomOf="@id/nameSongAP"
+        app:layout_constraintStart_toStartOf="@id/leftBorder"
+        />
+
+    <ImageButton
+        android:id="@+id/buttonAddAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:background="@color/colorBackgroundAP"
+
+        android:src="@drawable/button_add_in"
+
+        app:layout_constraintStart_toStartOf="@id/leftBorder"
+        app:layout_constraintTop_toBottomOf="@id/nameGroupAP" />
+
+    <ImageButton
+        android:id="@+id/buttonPlayAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/button_play_song"
+
+        app:layout_constraintTop_toBottomOf="@id/nameGroupAP"
+        app:layout_constraintStart_toEndOf="@id/buttonAddAP"
+        app:layout_constraintEnd_toStartOf="@id/buttonFavouritesAP"
+        android:background="@color/colorBackgroundAP"
+
+        />
+
+    <ImageButton
+        android:id="@+id/buttonFavouritesAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:src="@drawable/button_favourites_in"
+
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintTop_toBottomOf="@id/nameGroupAP"
+
+        app:layout_constraintEnd_toEndOf="@id/rightBorder"
+        android:background="@color/colorBackgroundAP"
+        app:layout_constraintVertical_bias="0.5"
+   />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/buttonsBottomBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="buttonAddAP,buttonPlayAP,buttonFavouritesAP"
+        />
+
+    <TextView
+        android:id="@+id/timeAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+
+        android:hint="@string/textTimeHintAP"
+
+        style="@style/styleTimeAp"
+
+        app:layout_constraintEnd_toEndOf="@id/rightBorder"
+        app:layout_constraintStart_toStartOf="@id/leftBorder"
+        app:layout_constraintTop_toBottomOf="@id/buttonsBottomBarrier"
+        app:layout_constrainedWidth="true"
+        android:gravity="center"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/textsBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="durationAP, albumAP, yearAP, genreAP, countryAP "
+        app:barrierDirection="end" />
+
+    <TextView
+        android:id="@+id/durationAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+
+        android:text="@string/textDurationAP"
+
+        style="@style/styleLeftText"
+
+        app:layout_constraintTop_toBottomOf="@id/timeAP"
+        app:layout_constraintStart_toStartOf="@id/leftBorder2"
+        />
+    <TextView
+        android:id="@+id/durationTextAP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constrainedWidth="true"
+        android:gravity="end"
+
+
+        android:hint="@string/textDurationHintAP"
+
+        style="@style/styleRightText"
+
+        app:layout_constraintTop_toTopOf="@id/durationAP"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder2"
+        app:layout_constraintStart_toEndOf="@id/textsBarrier"
+        />
+
+    <TextView
+        android:id="@+id/albumAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/textAlbumAP"
+
+        style="@style/styleLeftText"
+        app:layout_constraintTop_toBottomOf="@id/durationTextAP"
+        app:layout_constraintStart_toStartOf="@id/leftBorder2"
+        />
+    <TextView
+        android:id="@+id/albumTextAP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:hint="@string/textAlbumHintAP"
+
+        app:layout_constrainedWidth="true"
+
+        style="@style/styleRightText"
+
+        app:layout_constraintTop_toTopOf="@id/albumAP"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder2"
+        app:layout_constraintStart_toEndOf="@id/textsBarrier"
+        />
+    <TextView
+        android:id="@+id/yearAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/textYearAP"
+
+        style="@style/styleLeftText"
+        app:layout_constraintTop_toBottomOf="@id/albumTextAP"
+        app:layout_constraintStart_toStartOf="@id/leftBorder2"
+        />
+    <TextView
+        android:id="@+id/yearTextAP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:hint="@string/textYearHintAP"
+
+        app:layout_constrainedWidth="true"
+        style="@style/styleRightText"
+
+        app:layout_constraintTop_toTopOf="@id/yearAP"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder2"
+        app:layout_constraintStart_toEndOf="@id/textsBarrier"
+        />
+    <TextView
+        android:id="@+id/genreAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/textGenreAP"
+
+        style="@style/styleLeftText"
+        app:layout_constraintTop_toBottomOf="@id/yearTextAP"
+        app:layout_constraintStart_toStartOf="@id/leftBorder2"
+        />
+    <TextView
+        android:id="@+id/genreTextAP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:hint="@string/textGenreHintAP"
+
+        app:layout_constrainedWidth="true"
+
+        style="@style/styleRightText"
+
+        app:layout_constraintTop_toTopOf="@id/genreAP"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder2"
+        app:layout_constraintStart_toEndOf="@id/textsBarrier"
+        />
+    <TextView
+        android:id="@+id/countryAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/textCountryAP"
+        style="@style/styleLeftText"
+        app:layout_constraintTop_toBottomOf="@id/genreTextAP"
+        app:layout_constraintStart_toStartOf="@id/leftBorder2"
+        />
+    <TextView
+        android:id="@+id/countryTextAP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:hint="@string/textCountryHintAP"
+
+        app:layout_constrainedWidth="true"
+        style="@style/styleRightText"
+
+        app:layout_constraintTop_toTopOf="@id/countryAP"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder2"
+        app:layout_constraintStart_toEndOf="@id/textsBarrier"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

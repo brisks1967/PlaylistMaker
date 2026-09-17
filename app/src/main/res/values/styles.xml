@@ -58,9 +58,9 @@
 
 
     <style name="MySwitchStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="android:checked">true</item>
-        <item name="android:layout_marginEnd">@dimen/iconRightSetting</item>
-         <!-- thumb (кружок) -->
+         <item name="android:checked">true</item>
+         <item name="android:layout_marginEnd">@dimen/iconRightSetting</item>
+          <!-- thumb (кружок) -->
         <item name="thumbTint">@color/green</item>
         <!-- track (дорожка) -->
         <item name="trackTint">@color/tracGreen</item>
@@ -168,7 +168,7 @@
         <item name="android:textAlignment">center</item>
     </style>
 
-    <style name="styleNoConnection"  >
+    <style name="styleNoConnection">
         <item name="android:textColor">@color/noConnection_color_text</item>
         <item name="android:textSize">@dimen/textSizeNoConnection</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
@@ -177,5 +177,47 @@
     </style>
 
 
+    <style name="styleTimeAp">
+        <item name="android:textColor">@color/colorTimeAP</item>
+        <item name="android:textSize">@dimen/textSizeTimeAP</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:fontWeight">@dimen/fontWeightTimeAP</item>
+        <item name="android:textColorHint">@color/colorTimeAP</item>
+    </style>
+
+    <style name="styleLeftText">
+        <item name="android:textColor">@color/colorTextLeftAP</item>
+        <item name="android:textSize">@dimen/textSizeTextLeftAP</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:fontWeight">@dimen/fontWeightTextLeftAP</item>
+        <item name="android:paddingTop">@dimen/paddingTopLeftText</item>
+        <item name="android:paddingBottom">@dimen/paddingBottomLeftText</item>
+    </style>
+
+    <style name="styleRightText">
+        <item name="android:textColor">@color/colorTextRightAP</item>
+        <item name="android:textSize">@dimen/textSizeTextRightAP</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:fontWeight">@dimen/fontWeightTextRightAP</item>
+        <item name="android:paddingTop">@dimen/paddingTopRightText</item>
+        <item name="android:paddingBottom">@dimen/paddingBottomRightText</item>
+        <item name="android:textColorHint">@color/colorTextRightAP</item>
+    </style>
+
+    <style name="styleMainTextAP">
+        <item name="android:textColor">@color/colorTextTitleAP</item>
+        <item name="android:textSize">@dimen/textSizeMainAP</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:fontWeight">@dimen/fontWeightMainAP</item>
+        <item name="android:textColorHint">@color/colorTextTitleAP</item>
+    </style>
+
+    <style name="styleMainTextArtistAP">
+        <item name="android:textColor">@color/colorTextTitleAP</item>
+        <item name="android:textSize">@dimen/textSizeMainArtistAP</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:fontWeight">@dimen/fontWeightMainArtistAP</item>
+        <item name="android:textColorHint">@color/colorTextTitleAP</item>
+    </style>
 
 </resources>

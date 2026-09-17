@@ -31,4 +31,11 @@
 	<color name="textClearHistoryButton">#1A1B22</color>
 	<color name="fieldClearHistoryButton">#FFFFFF</color>
 
+
+	<color name="colorBackgroundAP">#1A1B22</color>
+	<color name="colorTextTitleAP">#FFFFFF</color>
+	<color name="colorTextRightAP">#FFFFFF</color>
+	<color name="colorTextLeftAP">#AEAFB4</color>
+	<color name="colorTimeAP">#FFFFFF</color>
+
 </resources>
