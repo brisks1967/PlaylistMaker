@@ -52,7 +52,7 @@
 
         <activity
             android:name=".AudioPlayer"
-            android:exported="true"
+            android:exported="false"
             android:label="Аудио Плеер">
         </activity>
 
