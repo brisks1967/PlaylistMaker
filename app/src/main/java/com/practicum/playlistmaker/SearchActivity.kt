@@ -105,6 +105,10 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
+        // устанавливаем слушателя нажатия на Трек
+
+
+
         clearButton.setOnClickListener {
             inputEditText.setText("")
 
@@ -289,7 +293,11 @@ class SearchActivity : AppCompatActivity() {
                                 trackTimeMillis = track.trackTimeMillis,
                                 artworkUrl100 = track.artworkUrl100,
                                 trackId = track.trackId,
-                                mark = 1  //  ЭТО МЕТКА
+                                mark = 1, //  ЭТО МЕТКА
+                                collectionName = track.collectionName,
+                                country = track.country,
+                                primaryGenreName = track.primaryGenreName,
+                                releaseDate = track.releaseDate
                             )
 
                             loadedTracks.add(trackForHistory)
@@ -316,6 +324,11 @@ class SearchActivity : AppCompatActivity() {
             clearHistoryButton.visibility = View.GONE
         } else {
         }
+
+        val intent = Intent(this@SearchActivity, AudioPlayer::class.java)
+        intent.putExtra("track_id", track.trackId)
+        startActivity(intent)
+
     }
 
     private fun clearHistory() {

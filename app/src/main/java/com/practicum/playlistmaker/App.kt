@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 
 class App : Application() {
@@ -20,7 +21,7 @@ class App : Application() {
         val sharedPrefs = getSharedPreferences(PRACTICUM_PREFERENCES, MODE_PRIVATE)
 
         sharedPrefs.edit()
-            .putBoolean(EDIT_TEXT_KEY, darkTheme)
+            .putBoolean(THEME_IS_DARK_KEY, darkTheme)
             .apply()
 
         AppCompatDelegate.setDefaultNightMode(

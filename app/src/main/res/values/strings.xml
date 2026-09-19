@@ -26,4 +26,23 @@
     <string name="loadFail">Загрузка не удалась. Проверьте подключение к интернету</string>
     <string name="youSearch">Вы искали</string>
     <string name="clearHistory">Очистить историю</string>
+
+    <string name="textNameSongHintAP">Название</string>
+    <!--  <string name="textNameSongHintAP">Yesterday (Remastered 2009)</string> -->
+    <string name="textNameArtistHintAP">Группа</string>
+    <string name="textTimeHintAP">0:30</string>
+    <string name="textDurationHintAP">5:35</string>
+    <string name="textAlbumHintAP">Альбом</string>
+
+    <!-- <string name="textAlbumHintAP">Yesterday (Remastered 2009)</string> -->
+
+    <string name="textYearHintAP">1965</string>
+    <string name="textGenreHintAP">Жанр</string>
+    <string name="textCountryHintAP">Страна</string>
+
+    <string name="textDurationAP">Длительность</string>
+    <string name="textAlbumAP">Альбом</string>
+    <string name="textYearAP">Год</string>
+    <string name="textGenreAP">Жанр</string>
+    <string name="textCountryAP">Страна</string>
 </resources>

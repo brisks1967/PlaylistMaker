@@ -13,7 +13,7 @@ import android.widget.Toast
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 
-const val EDIT_TEXT_KEY = "is_dark_theme"
+const val THEME_IS_DARK_KEY= "is_dark_theme"
 
 class SettingsActivity : AppCompatActivity()  {
 
@@ -34,13 +34,15 @@ class SettingsActivity : AppCompatActivity()  {
 
             val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitch)
 
-            val isDarkThemeSaved = sharedPrefs.getBoolean(EDIT_TEXT_KEY, false)
+            val isDarkThemeSaved = sharedPrefs.getBoolean(THEME_IS_DARK_KEY, false)
 
             themeSwitcher.setChecked(isDarkThemeSaved)
 
             themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
 
                 (applicationContext as App).switchTheme(checked)
+
+
 
             }
 
