@@ -1,29 +1,20 @@
 package com.practicum.playlistmaker
 
-import android.os.Bundle
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -93,7 +84,6 @@ class SearchActivity : AppCompatActivity() {
         resetInternet.visibility = View.GONE
         retryButton()
 
-
         // переменная linearLayout нужна была для изменения цвета фона поисковой строки - см ниже
         //   val linearLayout = findViewById<LinearLayout>(R.id.searchField2)
 
@@ -106,8 +96,6 @@ class SearchActivity : AppCompatActivity() {
         }
 
         // устанавливаем слушателя нажатия на Трек
-
-
 
         clearButton.setOnClickListener {
             inputEditText.setText("")
@@ -135,7 +123,6 @@ class SearchActivity : AppCompatActivity() {
 
                 saveText = s.toString()
                 clearButton.visibility = clearButtonVisibility(s)
-
 
                 if (saveText.isEmpty()) {
 // если строка поиска пуста, то показываем историю
@@ -204,7 +191,6 @@ class SearchActivity : AppCompatActivity() {
                         trackadapter.submitList(emptyList())
                     }
                 }
-
                 // Нет связи
                 override fun onFailure(call: Call<iTunesResponse>, t: Throwable) {
                     t.printStackTrace()
@@ -227,7 +213,6 @@ class SearchActivity : AppCompatActivity() {
             View.VISIBLE
         }
     }
-
 
     private fun retryButton() {
         resetInternet.setOnClickListener {
@@ -324,11 +309,10 @@ class SearchActivity : AppCompatActivity() {
             clearHistoryButton.visibility = View.GONE
         } else {
         }
-
+            // Отправляем поля трека в AudioPlayer
         val intent = Intent(this@SearchActivity, AudioPlayer::class.java)
-        intent.putExtra("track_id", track.trackId)
+        intent.putExtra("track", track)
         startActivity(intent)
-
     }
 
     private fun clearHistory() {
@@ -336,6 +320,5 @@ class SearchActivity : AppCompatActivity() {
         trackadapter.submitList(emptyList())
         historyContainer.visibility = View.GONE
         clearHistoryButton.visibility = View.GONE
-
     }
 }

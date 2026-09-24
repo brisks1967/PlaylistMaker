@@ -1,5 +1,11 @@
 package com.practicum.playlistmaker
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+
+
+@Parcelize
 data class Track(
     val trackName: String, // Название композиции
     val artistName: String, // Имя исполнителя
@@ -12,10 +18,11 @@ data class Track(
     val country: String?, // Название Страны
     val primaryGenreName: String?, // Название Жанра
     val releaseDate: String? // Год релиза
-)
+): Parcelable
 {
     // замена URL - картинки 100х100 на 512х512
     fun getCoverArtwork(): String? {
         return artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
     }
 }
+

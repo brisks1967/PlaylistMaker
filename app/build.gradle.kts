@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
-}
+    id("kotlin-parcelize")
+  }
+
 
 android {
     namespace = "com.practicum.playlistmaker"
