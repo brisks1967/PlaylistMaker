@@ -43,4 +43,7 @@
     <string name="textYearAP">Год</string>
     <string name="textGenreAP">Жанр</string>
     <string name="textCountryAP">Страна</string>
+
+    <string name="timerZeroAP">00:00</string>
+
 </resources>

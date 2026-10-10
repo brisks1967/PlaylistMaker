@@ -28,7 +28,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class SearchActivity : AppCompatActivity() {
 
     companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L // задержка обработки поля ввода - поиск трека
+        private const val TRACK_CLICK_DEBOUNCE_DELAY = 300L // задержка клика по треку
     }
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var inputEditText: EditText
@@ -38,6 +39,8 @@ class SearchActivity : AppCompatActivity() {
             performSearch()
         }
     }
+
+    var processingClick = false
 
 
     var saveText : String = ""
@@ -332,6 +335,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun handleItemClick(track: Track) {
+        if (processingClick) {
+            // Клик проигнорирован: предыдущий еще обрабатывается
+            return
+        }
+        processingClick = true
 
         searchHistory.addTrack(track.trackId.toString())
 
@@ -346,6 +354,11 @@ class SearchActivity : AppCompatActivity() {
         val intent = Intent(this@SearchActivity, AudioPlayer::class.java)
         intent.putExtra("track", track)
         startActivity(intent)
+
+        // Обработка задержки клика по треку
+        Handler(Looper.getMainLooper()).postDelayed({
+            processingClick = false}, TRACK_CLICK_DEBOUNCE_DELAY)
+
     }
 
     private fun clearHistory() {

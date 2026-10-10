@@ -26,7 +26,8 @@ class AudioPlayer  : AppCompatActivity() {
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
-        private const val THREAD_DELAY = 300L
+        private const val THREAD_DELAY = 300L // задержка обновления таймера
+        private const val THREAD_DELAY_PLAY_BUTTON = 300L // задержка клика по кнопке PLAY
       }
     private var playerState = STATE_DEFAULT
     private lateinit var backButton2: ImageView
@@ -131,7 +132,6 @@ class AudioPlayer  : AppCompatActivity() {
             try {
                 // validUri теперь гарантированно не null
                 mediaPlayer.setDataSource(this, validUri)
-                mediaPlayer.prepareAsync()
 
                 mediaPlayer.setOnPreparedListener {
                     buttonPlayAPView.isEnabled = true
@@ -140,10 +140,12 @@ class AudioPlayer  : AppCompatActivity() {
                 mediaPlayer.setOnCompletionListener {
                     playerState = STATE_PREPARED
                     mainThreadHandler?.removeCallbacks(updateTimerRunnable)
-                    secondsTextView.text = "00:00"
+                    secondsTextView.text = getString(R.string.timerZeroAP)
+
                     buttonPlayAPView.setImageResource(R.drawable.button_play_song)
                     buttonPlayAPView.isEnabled = true
                 }
+                mediaPlayer.prepareAsync()
 
             } catch (e: Exception) {
                 //  формат неверный
@@ -185,7 +187,7 @@ class AudioPlayer  : AppCompatActivity() {
             }
         }
 // задержка нажатия на кнопку PLAY
-        mainThreadHandler?.postDelayed(Runnable {isProcessingPlayback = false}, THREAD_DELAY)
+        mainThreadHandler?.postDelayed(Runnable {isProcessingPlayback = false}, THREAD_DELAY_PLAY_BUTTON)
     }
 
     override fun onPause() {
