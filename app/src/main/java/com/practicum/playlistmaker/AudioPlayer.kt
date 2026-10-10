@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -12,9 +13,22 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Handler
+import android.os.Looper
+import java.util.Locale
 
 class AudioPlayer  : AppCompatActivity() {
 
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+        private const val THREAD_DELAY = 300L
+      }
+    private var playerState = STATE_DEFAULT
     private lateinit var backButton2: ImageView
     private lateinit var imageTrackAPView: ImageView
     private lateinit var buttonAddAPView: ImageButton
@@ -29,6 +43,27 @@ class AudioPlayer  : AppCompatActivity() {
     private lateinit var genreTrackView: TextView
     private lateinit var countryTrackView: TextView
 
+    private lateinit var secondsTextView: TextView
+
+    private var mediaPlayer = MediaPlayer()
+    private var uri: Uri? = null
+    private var timeText: String? = "00:00"
+    private var mainThreadHandler: Handler? = null
+    private val updateTimerRunnable = object :  Runnable {
+        override fun run() {
+            val currentPosition = mediaPlayer.currentPosition
+
+                timeText =SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+                secondsTextView.text = timeText
+
+            if (mediaPlayer.isPlaying) {
+                mainThreadHandler?.postDelayed(this, THREAD_DELAY)
+            }
+        }
+    }
+
+    private var isProcessingPlayback = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +77,8 @@ class AudioPlayer  : AppCompatActivity() {
             finish()
             return
         }
-
+        // Объявляем поток - для secondsTextView
+        mainThreadHandler = Handler(Looper.getMainLooper())
 
         backButton2 = findViewById<ImageView>(R.id.buttonBackAP)
         imageTrackAPView = findViewById<ImageView>(R.id.imageTrackAP)
@@ -58,9 +94,15 @@ class AudioPlayer  : AppCompatActivity() {
         genreTrackView = findViewById(R.id.genreTextAP)
         countryTrackView = findViewById(R.id.countryTextAP)
 
+        secondsTextView= findViewById(R.id.timeAP)
 
-        setupClickListeners()
+
+
         makeUI(track)
+        preparePlayer()
+        setupClickListeners()
+
+
     }
 
 
@@ -74,12 +116,88 @@ class AudioPlayer  : AppCompatActivity() {
         }
 
         buttonPlayAPView.setOnClickListener {
+            playbackControl()
             Log.d("Player", "Нажата кнопка Play!")
         }
 
         buttonFavouritesAPView.setOnClickListener {
             Log.d("Player", "Нажата кнопка Добавить в избранное!")
         }
+    }
+
+    private fun preparePlayer() {
+
+        uri?.let { validUri ->
+            try {
+                // validUri теперь гарантированно не null
+                mediaPlayer.setDataSource(this, validUri)
+                mediaPlayer.prepareAsync()
+
+                mediaPlayer.setOnPreparedListener {
+                    buttonPlayAPView.isEnabled = true
+                    playerState = STATE_PREPARED
+                }
+                mediaPlayer.setOnCompletionListener {
+                    playerState = STATE_PREPARED
+                    mainThreadHandler?.removeCallbacks(updateTimerRunnable)
+                    secondsTextView.text = "00:00"
+                    buttonPlayAPView.setImageResource(R.drawable.button_play_song)
+                    buttonPlayAPView.isEnabled = true
+                }
+
+            } catch (e: Exception) {
+                //  формат неверный
+                e.printStackTrace()
+                Toast.makeText(this, "Не удалось загрузить аудиофайл", Toast.LENGTH_SHORT).show()
+                buttonPlayAPView.isEnabled = false
+            }
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+           playerState = STATE_PLAYING
+
+           mainThreadHandler?.post(updateTimerRunnable)
+        buttonPlayAPView.setImageResource(R.drawable.button_pause)
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        playerState = STATE_PAUSED
+        mainThreadHandler?.removeCallbacks(updateTimerRunnable)
+        buttonPlayAPView.setImageResource(R.drawable.button_play_song)
+    }
+
+    private fun playbackControl() {
+        if (isProcessingPlayback) {
+            Log.d("Player", "Игнорируем клик: обработка уже идет")
+            return
+        }
+        isProcessingPlayback = true
+
+        when(playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+// задержка нажатия на кнопку PLAY
+        mainThreadHandler?.postDelayed(Runnable {isProcessingPlayback = false}, THREAD_DELAY)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mainThreadHandler?.removeCallbacks(updateTimerRunnable)
+        mediaPlayer.release()
+        mainThreadHandler = null
     }
 
 
@@ -137,6 +255,16 @@ class AudioPlayer  : AppCompatActivity() {
             // Если ссылки нет вообще, ставим заглушку
             imageTrackAPView.setImageResource(R.drawable.image_hint_ap)
         }
+        val url : String? = track.previewUrl
+        if (!url.isNullOrBlank()) {
+            try {
+                uri = Uri.parse(url)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        } else {
+            // Ссылки нет (null или пустая). Ничего не делаем
+          }
 
     }
 

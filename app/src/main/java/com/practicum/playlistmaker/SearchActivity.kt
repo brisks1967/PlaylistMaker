@@ -3,6 +3,8 @@ package com.practicum.playlistmaker
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -12,6 +14,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +24,22 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 class SearchActivity : AppCompatActivity() {
+
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+    }
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var inputEditText: EditText
+    private val searchRunnable = Runnable {
+        val currentText = inputEditText.text.toString()
+        if (currentText.isNotEmpty()) {
+            performSearch()
+        }
+    }
+
+
     var saveText : String = ""
     private var lastFailedQuery: String? = null // здесь запоминаем последний запрос для кнопки Обновить
     private lateinit var emptyStateView: LinearLayout
@@ -30,7 +48,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var resetInternet: ImageView
     private lateinit var historyContainer: LinearLayout
     private lateinit var clearHistoryButton: FrameLayout
+    private lateinit var progressBar: ProgressBar
+    private var currentSearchCall: Call<iTunesResponse>? = null
     private lateinit var searchHistory: SearchHistory
+
+
 
 
     // Блок авторизации и подключения API начало
@@ -50,6 +72,8 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
+        progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        progressBar.visibility = View.GONE
 
         //Карусель записей - начало
 
@@ -68,10 +92,9 @@ class SearchActivity : AppCompatActivity() {
             clearHistory()
         }
 
+        inputEditText = findViewById<EditText>(R.id.inputEditText)
 
-        val inputEditText = findViewById<EditText>(R.id.inputEditText)
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
-
 
         searchHistory = SearchHistory(this)
 
@@ -89,7 +112,6 @@ class SearchActivity : AppCompatActivity() {
 
         // Обработка кнопки «Назад»
         val backButton = findViewById<LinearLayout>(R.id.containerSearchBack)
-
         backButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             finish()
@@ -136,7 +158,7 @@ class SearchActivity : AppCompatActivity() {
                     historyContainer.visibility = View.GONE
                     clearHistoryButton.visibility = View.GONE
 
-                    performSearch(s.toString())
+                    searchDebounce()
                 }
             }
         }
@@ -148,7 +170,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
-                performSearch(inputEditText.text.toString())
+                performSearch()
 
                                 // скрываем клавиатуру, т.к польз сказал что готово
                 val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -161,14 +183,21 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun performSearch(query: String) {
+    private fun performSearch() {
+
+        val query = inputEditText.text.toString()
+
+
         if (query.isNotEmpty()) {
-            val call = iTuneService.searchTracks(query)
-            call.enqueue(object : Callback<iTunesResponse> {
+            progressBar.visibility = View.VISIBLE
+            currentSearchCall?.cancel()
+
+            currentSearchCall= iTuneService.searchTracks(query)
+            currentSearchCall?.enqueue(object : Callback<iTunesResponse> {
 
                  override fun onResponse(call: Call<iTunesResponse>, response: Response<iTunesResponse>) {
-
-                    // Логика успешного ответа
+                     progressBar.visibility = View.GONE
+                     // Логика успешного ответа
                     if (response.isSuccessful && response.body() != null) {
                         val tracksList = response.body()!!.results
                         if (tracksList.isNotEmpty()) {
@@ -176,6 +205,7 @@ class SearchActivity : AppCompatActivity() {
                         emptyStateView.visibility = View.GONE
                         noInternetView.visibility = View.GONE
                         recyclerView.visibility = View.VISIBLE
+
                         } else {
                             // показываем заглушку «ничего не найдено»
                             emptyStateView.visibility = View.VISIBLE
@@ -198,6 +228,7 @@ class SearchActivity : AppCompatActivity() {
                     noInternetView.visibility = View.VISIBLE
                     resetInternet.visibility = View.VISIBLE
                     recyclerView.visibility = View.GONE
+                    progressBar.visibility = View.GONE
                     trackadapter.submitList(emptyList())
                 }
             })
@@ -219,7 +250,8 @@ class SearchActivity : AppCompatActivity() {
             if (!lastFailedQuery.isNullOrBlank()) {
                 resetInternet.visibility = View.GONE
                 noInternetView.visibility = View.GONE
-                performSearch(lastFailedQuery!!)
+                inputEditText.setText(lastFailedQuery!!)
+                performSearch()
 
                 lastFailedQuery = null
             }
@@ -235,10 +267,10 @@ class SearchActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
 
         val restoredText = savedInstanceState.getString("EDIT_TEXT_KEY")
-        val myEditText: EditText = findViewById(R.id.inputEditText)
+
 
         if (restoredText != null) {
-            myEditText.setText(restoredText)
+            inputEditText.setText(restoredText)
         }
     }
 // Обработка блока истории
@@ -282,7 +314,8 @@ class SearchActivity : AppCompatActivity() {
                                 collectionName = track.collectionName,
                                 country = track.country,
                                 primaryGenreName = track.primaryGenreName,
-                                releaseDate = track.releaseDate
+                                releaseDate = track.releaseDate,
+                                previewUrl = track.previewUrl
                             )
 
                             loadedTracks.add(trackForHistory)
@@ -303,8 +336,8 @@ class SearchActivity : AppCompatActivity() {
         searchHistory.addTrack(track.trackId.toString())
 
         if (track.mark == 1) {
-
-            performSearch(track.trackName)
+            inputEditText.setText(track.trackName)
+            performSearch()
             historyContainer.visibility = View.GONE
             clearHistoryButton.visibility = View.GONE
         } else {
@@ -320,5 +353,13 @@ class SearchActivity : AppCompatActivity() {
         trackadapter.submitList(emptyList())
         historyContainer.visibility = View.GONE
         clearHistoryButton.visibility = View.GONE
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable
+
+
+            , SEARCH_DEBOUNCE_DELAY)
     }
 }

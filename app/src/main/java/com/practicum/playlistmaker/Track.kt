@@ -17,7 +17,8 @@ data class Track(
     val collectionName: String?, // Название Альбома
     val country: String?, // Название Страны
     val primaryGenreName: String?, // Название Жанра
-    val releaseDate: String? // Год релиза
+    val releaseDate: String?, //год релиза
+    val previewUrl: String // Часть трека для ознакомления
 ): Parcelable
 {
     // замена URL - картинки 100х100 на 512х512

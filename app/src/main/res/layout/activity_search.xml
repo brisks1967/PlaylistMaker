@@ -58,13 +58,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
-                android:src="@drawable/search2"
-
-                app:tint="@color/iconSearchBar"
                 android:layout_gravity="center_vertical"
-                android:gravity="start"
+
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="8dp"
+                android:gravity="start"
+                android:src="@drawable/search2"
+                app:tint="@color/iconSearchBar"
 
                 />
 
@@ -110,14 +110,24 @@
 
                    </LinearLayout>
 
+        <!--  ProgressBar-->
+        <ProgressBar android:id="@+id/progressBar"
+            android:layout_marginTop="140dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/colorProgressBar"
+            android:visibility="gone"
+            />
+
+
                    <!--  История поиска-->
     <LinearLayout
         android:id="@+id/historyBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"  >
-
+          >
 
          <TextView
          android:id="@+id/historyTitle"
@@ -192,6 +202,8 @@
                 style="@style/styleNoFind"
                 android:layout_marginTop="16dp"
                 />
+
+
         </LinearLayout>
 
         <!--  заглушка если ошибка соединения               -->
