@@ -39,11 +39,7 @@ class SettingsActivity : AppCompatActivity()  {
             themeSwitcher.setChecked(isDarkThemeSaved)
 
             themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-
                 (applicationContext as App).switchTheme(checked)
-
-
-
             }
 
             // Обработка кнопки «Поделиться приложением»
@@ -66,7 +62,6 @@ class SettingsActivity : AppCompatActivity()  {
             acceptEU.setOnClickListener {
                 readAcceptText()
             }
-
         }
 
             private fun shareApp() {
@@ -92,11 +87,9 @@ class SettingsActivity : AppCompatActivity()  {
                     Toast.makeText(this, getString(R.string.errorLetter), Toast.LENGTH_LONG).show()
                 }
             }
-
     private fun readAcceptText() {
         val url = getString(R.string.agreement)
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
     }
-
 }

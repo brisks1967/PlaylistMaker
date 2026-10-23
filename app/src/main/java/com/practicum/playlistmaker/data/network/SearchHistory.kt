@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.data.network
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE

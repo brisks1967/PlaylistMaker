@@ -11,25 +11,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import com.practicum.playlistmaker.domain.models.Track
 import java.util.Locale
+import com.practicum.playlistmaker.domain.utils.AppConst
 
 class AudioPlayer  : AppCompatActivity() {
 
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        private const val THREAD_DELAY = 300L // задержка обновления таймера
-        private const val THREAD_DELAY_PLAY_BUTTON = 300L // задержка клика по кнопке PLAY
-      }
-    private var playerState = STATE_DEFAULT
+    private var playerState = AppConst.STATE_DEFAULT
     private lateinit var backButton2: ImageView
     private lateinit var imageTrackAPView: ImageView
     private lateinit var buttonAddAPView: ImageButton
@@ -58,7 +50,7 @@ class AudioPlayer  : AppCompatActivity() {
                 secondsTextView.text = timeText
 
             if (mediaPlayer.isPlaying) {
-                mainThreadHandler?.postDelayed(this, THREAD_DELAY)
+                mainThreadHandler?.postDelayed(this, AppConst.THREAD_DELAY)
             }
         }
     }
@@ -97,13 +89,9 @@ class AudioPlayer  : AppCompatActivity() {
 
         secondsTextView= findViewById(R.id.timeAP)
 
-
-
         makeUI(track)
         preparePlayer()
         setupClickListeners()
-
-
     }
 
 
@@ -135,10 +123,10 @@ class AudioPlayer  : AppCompatActivity() {
 
                 mediaPlayer.setOnPreparedListener {
                     buttonPlayAPView.isEnabled = true
-                    playerState = STATE_PREPARED
+                    playerState = AppConst.STATE_PREPARED
                 }
                 mediaPlayer.setOnCompletionListener {
-                    playerState = STATE_PREPARED
+                    playerState = AppConst.STATE_PREPARED
                     mainThreadHandler?.removeCallbacks(updateTimerRunnable)
                     secondsTextView.text = getString(R.string.timerZeroAP)
 
@@ -158,7 +146,7 @@ class AudioPlayer  : AppCompatActivity() {
 
     private fun startPlayer() {
         mediaPlayer.start()
-           playerState = STATE_PLAYING
+           playerState = AppConst.STATE_PLAYING
 
            mainThreadHandler?.post(updateTimerRunnable)
         buttonPlayAPView.setImageResource(R.drawable.button_pause)
@@ -166,7 +154,7 @@ class AudioPlayer  : AppCompatActivity() {
 
     private fun pausePlayer() {
         mediaPlayer.pause()
-        playerState = STATE_PAUSED
+        playerState = AppConst.STATE_PAUSED
         mainThreadHandler?.removeCallbacks(updateTimerRunnable)
         buttonPlayAPView.setImageResource(R.drawable.button_play_song)
     }
@@ -179,15 +167,15 @@ class AudioPlayer  : AppCompatActivity() {
         isProcessingPlayback = true
 
         when(playerState) {
-            STATE_PLAYING -> {
+            AppConst.STATE_PLAYING -> {
                 pausePlayer()
             }
-            STATE_PREPARED, STATE_PAUSED -> {
+            AppConst.STATE_PREPARED, AppConst.STATE_PAUSED -> {
                 startPlayer()
             }
         }
 // задержка нажатия на кнопку PLAY
-        mainThreadHandler?.postDelayed(Runnable {isProcessingPlayback = false}, THREAD_DELAY_PLAY_BUTTON)
+        mainThreadHandler?.postDelayed(Runnable {isProcessingPlayback = false}, AppConst.THREAD_DELAY_PLAY_BUTTON)
     }
 
     override fun onPause() {
@@ -239,24 +227,10 @@ class AudioPlayer  : AppCompatActivity() {
         }
 
         //Обложка
-
-        val radiusDp = 8
-        val density2 = imageTrackAPView.context.resources.displayMetrics.density
-        val radiusPx = (radiusDp * density2).toInt()
         val coverUrl = track.getCoverArtwork()
+        Creator.loadCoverImageGlideAP(this@AudioPlayer,imageTrackAPView,coverUrl)
 
-        // Проверяем, есть ли ссылка на картинку
 
-        coverUrl?.let { url ->
-                 Glide.with(this@AudioPlayer)
-                .load(url)
-                .placeholder(R.drawable.image_hint_ap) // Что показать, пока грузится
-                .transform(RoundedCorners(radiusPx)) // скругления углов
-                .into(imageTrackAPView)        // Куда вставить картинку
-        } ?: run {
-            // Если ссылки нет вообще, ставим заглушку
-            imageTrackAPView.setImageResource(R.drawable.image_hint_ap)
-        }
         val url : String? = track.previewUrl
         if (!url.isNullOrBlank()) {
             try {
@@ -267,7 +241,5 @@ class AudioPlayer  : AppCompatActivity() {
         } else {
             // Ссылки нет (null или пустая). Ничего не делаем
           }
-
     }
-
 }

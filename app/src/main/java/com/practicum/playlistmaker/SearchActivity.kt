@@ -18,19 +18,20 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.data.dto.TrackSearchRequest
+import com.practicum.playlistmaker.data.dto.iTunesResponse
+import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
+import com.practicum.playlistmaker.data.network.SearchHistory
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.domain.models.TrackConverter
+import com.practicum.playlistmaker.domain.utils.AppConst
+import com.practicum.playlistmaker.domain.utils.searchDebounce
+import com.practicum.playlistmaker.presentation.TrackAdapter
+import kotlin.concurrent.thread
 
 
 class SearchActivity : AppCompatActivity() {
 
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L // задержка обработки поля ввода - поиск трека
-        private const val TRACK_CLICK_DEBOUNCE_DELAY = 300L // задержка клика по треку
-    }
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var inputEditText: EditText
     private val searchRunnable = Runnable {
@@ -52,23 +53,13 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyContainer: LinearLayout
     private lateinit var clearHistoryButton: FrameLayout
     private lateinit var progressBar: ProgressBar
-    private var currentSearchCall: Call<iTunesResponse>? = null
     private lateinit var searchHistory: SearchHistory
+    private lateinit var clearButton: ImageView
+    private lateinit var backButton: LinearLayout
+            private val trackadapter = TrackAdapter { clickedTrack -> handleItemClick(clickedTrack) }
 
-
-
-
-    // Блок авторизации и подключения API начало
-    private val iTunesBaseUrl = "https://itunes.apple.com"
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val iTuneService = retrofit.create(iTunesSearchAPI::class.java)
-
-// Блок авторизации и подключения API - конец
-
-    private val trackadapter = TrackAdapter { clickedTrack -> handleItemClick(clickedTrack) }
+    private val client = Creator.createClient()
+    private val converter = Creator.createTrackConverter()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,8 +68,6 @@ class SearchActivity : AppCompatActivity() {
 
         progressBar = findViewById<ProgressBar>(R.id.progressBar)
         progressBar.visibility = View.GONE
-
-        //Карусель записей - начало
 
         recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -97,9 +86,9 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText = findViewById<EditText>(R.id.inputEditText)
 
-        val clearButton = findViewById<ImageView>(R.id.clearIcon)
+        clearButton = findViewById<ImageView>(R.id.clearIcon)
 
-        searchHistory = SearchHistory(this)
+        searchHistory = Creator.createSearchHistory(this)
 
         if (inputEditText.text.toString().isEmpty()) {
             val historyIds = searchHistory.getTrackIDList()
@@ -110,18 +99,14 @@ class SearchActivity : AppCompatActivity() {
         resetInternet.visibility = View.GONE
         retryButton()
 
-        // переменная linearLayout нужна была для изменения цвета фона поисковой строки - см ниже
-        //   val linearLayout = findViewById<LinearLayout>(R.id.searchField2)
-
         // Обработка кнопки «Назад»
-        val backButton = findViewById<LinearLayout>(R.id.containerSearchBack)
+        backButton = findViewById<LinearLayout>(R.id.containerSearchBack)
         backButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             finish()
         }
 
         // устанавливаем слушателя нажатия на Трек
-
         clearButton.setOnClickListener {
             inputEditText.setText("")
 
@@ -134,18 +119,8 @@ class SearchActivity : AppCompatActivity() {
 
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
-
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-          //      // Изменение фона поисковой строки - начало блока
-          //      if (s.isNullOrEmpty()) {
-          //          linearLayout.setBackgroundColor(getColor(R.color.neutral))
-          //      } else {
-          //          linearLayout.setBackgroundColor(getColor(R.color.neutral))
-          //      }
-          //     // Изменение фона поисковой строки - конец блока
-
                 saveText = s.toString()
                 clearButton.visibility = clearButtonVisibility(s)
 
@@ -155,17 +130,15 @@ class SearchActivity : AppCompatActivity() {
                     clearHistoryButton.visibility = View.VISIBLE
                      val historyIds = searchHistory.getTrackIDList()
                       loadHistoryTracksFromApi(historyIds)
-
                 }else {
    // если строка поиска заполняется пользователем, то историю убираем
                     historyContainer.visibility = View.GONE
                     clearHistoryButton.visibility = View.GONE
-
-                    searchDebounce()
+   // Делаем задержку в поле ввода
+                    searchRunnable.searchDebounce(AppConst.SEARCH_DEBOUNCE_DELAY)
                 }
             }
         }
-
         // ввод пользователя посимвольно
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
@@ -174,8 +147,7 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
                 performSearch()
-
-                                // скрываем клавиатуру, т.к польз сказал что готово
+          // скрываем клавиатуру, т.к польз сказал что готово
                 val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
                 inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
 
@@ -187,28 +159,29 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun performSearch() {
-
         val query = inputEditText.text.toString()
-
 
         if (query.isNotEmpty()) {
             progressBar.visibility = View.VISIBLE
-            currentSearchCall?.cancel()
 
-            currentSearchCall= iTuneService.searchTracks(query)
-            currentSearchCall?.enqueue(object : Callback<iTunesResponse> {
+            thread {
+                try {
+                    val request = TrackSearchRequest(expression = query)
+                    val response = client.doRequest(request)
 
-                 override fun onResponse(call: Call<iTunesResponse>, response: Response<iTunesResponse>) {
-                     progressBar.visibility = View.GONE
-                     // Логика успешного ответа
-                    if (response.isSuccessful && response.body() != null) {
-                        val tracksList = response.body()!!.results
-                        if (tracksList.isNotEmpty()) {
-                        trackadapter.submitList(tracksList)
-                        emptyStateView.visibility = View.GONE
-                        noInternetView.visibility = View.GONE
-                        recyclerView.visibility = View.VISIBLE
+                    runOnUiThread {
+                    progressBar.visibility = View.GONE
 
+                    if (response.resultCode == 200 && response.body != null) {
+                        val rawData = response.body as? iTunesResponse
+                        val dtoList = rawData?.results ?: emptyList()
+                        val tracksList = dtoList.map { dto -> converter.convertSingle(dto) }
+
+                        if (dtoList.isNotEmpty()) {
+                            trackadapter.submitList(tracksList)
+                            emptyStateView.visibility = View.GONE
+                            noInternetView.visibility = View.GONE
+                            recyclerView.visibility = View.VISIBLE
                         } else {
                             // показываем заглушку «ничего не найдено»
                             emptyStateView.visibility = View.VISIBLE
@@ -223,18 +196,17 @@ class SearchActivity : AppCompatActivity() {
                         noInternetView.visibility = View.GONE
                         trackadapter.submitList(emptyList())
                     }
+                    }
+                } catch (e: Exception) {
+
+                    runOnUiThread {
+                        progressBar.visibility = View.GONE
+                        noInternetView.visibility = View.VISIBLE
+                        resetInternet.visibility = View.VISIBLE
+                        trackadapter.submitList(emptyList())
+                    }
                 }
-                // Нет связи
-                override fun onFailure(call: Call<iTunesResponse>, t: Throwable) {
-                    t.printStackTrace()
-                    lastFailedQuery = query // запомнили последний запрос для кнопки Обновить
-                    noInternetView.visibility = View.VISIBLE
-                    resetInternet.visibility = View.VISIBLE
-                    recyclerView.visibility = View.GONE
-                    progressBar.visibility = View.GONE
-                    trackadapter.submitList(emptyList())
-                }
-            })
+            }
         } else {
             trackadapter.submitList(emptyList())
         }
@@ -255,12 +227,10 @@ class SearchActivity : AppCompatActivity() {
                 noInternetView.visibility = View.GONE
                 inputEditText.setText(lastFailedQuery!!)
                 performSearch()
-
                 lastFailedQuery = null
             }
         }
     }
-
      override fun onSaveInstanceState(outState: Bundle) {
             super.onSaveInstanceState(outState)
             outState.putString("EDIT_TEXT_KEY", saveText)
@@ -268,97 +238,59 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-
         val restoredText = savedInstanceState.getString("EDIT_TEXT_KEY")
-
-
         if (restoredText != null) {
             inputEditText.setText(restoredText)
         }
     }
+
 // Обработка блока истории
     private fun loadHistoryTracksFromApi(historyIds: List<String>) {
-
         val loadedTracks = mutableListOf<Track>()
 
         if (historyIds.isEmpty()) {
-            trackadapter.submitList(emptyList())
-            historyContainer.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
-
+            runOnUiThread {
+                trackadapter.submitList(emptyList())
+                historyContainer.visibility = View.GONE
+                clearHistoryButton.visibility = View.GONE
+            }
             return
         }
 
        historyContainer.visibility = View.VISIBLE
-        clearHistoryButton.visibility = View.VISIBLE
+       clearHistoryButton.visibility = View.VISIBLE
 
-       historyIds.forEach { idStr ->
-            val id = idStr.toLongOrNull()
-            if (id == null) return@forEach
+      thread {
+          for (idStr in historyIds) {
+              val id = idStr.toLongOrNull() ?: continue
 
-            val call = iTuneService.searchTracksID(id)
+              val response = client.getTrackById(id)
 
-            call.enqueue(object : Callback<iTunesResponse> {
-                override fun onResponse(call: Call<iTunesResponse>, response: Response<iTunesResponse>) {
+              if (response.resultCode == 200 && response.body != null) {
 
-                    if (response.isSuccessful && response.body() != null) {
-                        val results = response.body()!!.results
+                  val rawData = response.body as? iTunesResponse
+                  val dtoList = rawData?.results ?: emptyList()
 
-                        if (results.isNotEmpty()) {
-                            val track = results[0]
-
-                            val trackForHistory = Track(
-                                trackName = track.trackName,
-                                artistName = track.artistName,
-                                trackTimeMillis = track.trackTimeMillis,
-                                artworkUrl100 = track.artworkUrl100,
-                                trackId = track.trackId,
-                                mark = 1, //  ЭТО МЕТКА
-                                collectionName = track.collectionName,
-                                country = track.country,
-                                primaryGenreName = track.primaryGenreName,
-                                releaseDate = track.releaseDate,
-                                previewUrl = track.previewUrl
-                            )
-
-                            loadedTracks.add(trackForHistory)
-                            trackadapter.submitList(loadedTracks.toList())
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<iTunesResponse>, t: Throwable) {
-                    // Если трек не загрузился .....
-                }
-            })
-        }
-    }
-
-    private fun handleItemClick(track: Track) {
-        if (processingClick) {
-            // Клик проигнорирован: предыдущий еще обрабатывается
-            return
-        }
-        processingClick = true
-
-        searchHistory.addTrack(track.trackId.toString())
-
-        if (track.mark == 1) {
-            inputEditText.setText(track.trackName)
-            performSearch()
-            historyContainer.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
-        } else {
-        }
-            // Отправляем поля трека в AudioPlayer
-        val intent = Intent(this@SearchActivity, AudioPlayer::class.java)
-        intent.putExtra("track", track)
-        startActivity(intent)
-
-        // Обработка задержки клика по треку
-        Handler(Looper.getMainLooper()).postDelayed({
-            processingClick = false}, TRACK_CLICK_DEBOUNCE_DELAY)
-
+                  if (dtoList.isNotEmpty()) {
+                      val dto = dtoList[0] // Берем первый (и единственный) трек
+                      val trackForHistory = converter.convertSingle(dto).copy(mark = 1)
+                      loadedTracks.add(trackForHistory)
+                  }
+              } else {
+              }
+          }
+          runOnUiThread {
+              if (loadedTracks.isNotEmpty()) {
+                  trackadapter.submitList(loadedTracks.toList())
+                  historyContainer.visibility = View.VISIBLE
+                  clearHistoryButton.visibility = View.VISIBLE
+              } else {
+                  trackadapter.submitList(emptyList())
+                  historyContainer.visibility = View.GONE
+                  clearHistoryButton.visibility = View.GONE
+              }
+          }
+      }
     }
 
     private fun clearHistory() {
@@ -368,11 +300,28 @@ class SearchActivity : AppCompatActivity() {
         clearHistoryButton.visibility = View.GONE
     }
 
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable
+    private fun handleItemClick(track: Track) {
+        if (processingClick) {
+            // Клик проигнорирован: предыдущий еще обрабатывается
+            return
+        }
+        processingClick = true
+        searchHistory.addTrack(track.trackId.toString())
 
+        if (track.mark == 1) {
+            inputEditText.setText(track.trackName)
+            performSearch()
+            historyContainer.visibility = View.GONE
+            clearHistoryButton.visibility = View.GONE
+        } else {
+        }
+        // Отправляем поля трека в AudioPlayer
+        val intent = Intent(this@SearchActivity, AudioPlayer::class.java)
+        intent.putExtra("track", track)
+        startActivity(intent)
 
-            , SEARCH_DEBOUNCE_DELAY)
+        // Обработка задержки клика по треку
+        Handler(Looper.getMainLooper()).postDelayed({
+            processingClick = false}, AppConst.TRACK_CLICK_DEBOUNCE_DELAY)
     }
 }
