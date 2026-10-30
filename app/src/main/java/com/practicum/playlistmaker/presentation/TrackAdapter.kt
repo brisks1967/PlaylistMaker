@@ -1,8 +1,10 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.models.Track
 
 class TrackAdapter(private val onItemClick: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder> () {
 
@@ -29,4 +31,7 @@ class TrackAdapter(private val onItemClick: (Track) -> Unit) : RecyclerView.Adap
         data = newData
         notifyDataSetChanged()
     }
+
+
+
 }

@@ -1,37 +1,36 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.domain.models.ThemeRepository
+
 
 class App : Application() {
-    companion object {
-        const val PRACTICUM_PREFERENCES = "practicum_preferences"
-    }
-    var darkTheme = false
 
+    private lateinit var themeRepository: ThemeRepository
 
     override fun onCreate() {
         super.onCreate()
+        themeRepository = Creator.createThemeRepository(this)
+        applySavedTheme()
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
+        themeRepository.setDarkThemeEnabled(darkThemeEnabled)
 
-        darkTheme = darkThemeEnabled
-        val sharedPrefs = getSharedPreferences(PRACTICUM_PREFERENCES, MODE_PRIVATE)
-
-        sharedPrefs.edit()
-            .putBoolean(THEME_IS_DARK_KEY, darkTheme)
-            .apply()
-
-        AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
-                AppCompatDelegate.MODE_NIGHT_YES
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else {
-                AppCompatDelegate.MODE_NIGHT_NO
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
-        )
-
     }
 
+    private fun applySavedTheme() {
+
+            if (themeRepository.isDarkThemeEnabled()) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else{
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+    }
 }

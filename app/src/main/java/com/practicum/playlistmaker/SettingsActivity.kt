@@ -1,19 +1,15 @@
 package com.practicum.playlistmaker
 
 import androidx.appcompat.app.AppCompatActivity
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.practicum.playlistmaker.domain.models.AppConst.PRACTICUM_PREFERENCES
+import com.practicum.playlistmaker.domain.models.AppConst.THEME_IS_DARK_KEY
 
-const val THEME_IS_DARK_KEY= "is_dark_theme"
 
 class SettingsActivity : AppCompatActivity()  {
 
@@ -30,7 +26,7 @@ class SettingsActivity : AppCompatActivity()  {
             }
 
            // Обработка кнопки «Темная тема»
-            val sharedPrefs = getSharedPreferences(App.PRACTICUM_PREFERENCES, MODE_PRIVATE)
+            val sharedPrefs = getSharedPreferences(PRACTICUM_PREFERENCES, MODE_PRIVATE)
 
             val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitch)
 
@@ -39,11 +35,8 @@ class SettingsActivity : AppCompatActivity()  {
             themeSwitcher.setChecked(isDarkThemeSaved)
 
             themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-
-                (applicationContext as App).switchTheme(checked)
-
-
-
+                (application as App).switchTheme(checked)
+                recreate()
             }
 
             // Обработка кнопки «Поделиться приложением»
@@ -66,7 +59,6 @@ class SettingsActivity : AppCompatActivity()  {
             acceptEU.setOnClickListener {
                 readAcceptText()
             }
-
         }
 
             private fun shareApp() {
@@ -92,11 +84,9 @@ class SettingsActivity : AppCompatActivity()  {
                     Toast.makeText(this, getString(R.string.errorLetter), Toast.LENGTH_LONG).show()
                 }
             }
-
     private fun readAcceptText() {
         val url = getString(R.string.agreement)
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
     }
-
 }

@@ -1,20 +1,21 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.data.network
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.practicum.playlistmaker.domain.models.SearchHistoryRepository
 
 const val TRACK_HISTORY = "track_history"
 const val KEY_HISTORY = "search_history_key"
 
-class SearchHistory (private val context: Context) {
+class SearchHistory (private val context: Context) : SearchHistoryRepository {
     private val MAX_ITEMS = 10
     private val prefs = context.getSharedPreferences(TRACK_HISTORY, MODE_PRIVATE)
     private val gson = Gson()
 
 
-     fun addTrack(trackId: String){
+    override  fun addTrack(trackId: String){
         if (trackId.isBlank()) return
 
         val currentId = getTrackIDList()
@@ -32,7 +33,7 @@ class SearchHistory (private val context: Context) {
     }
 
 
-     fun getTrackIDList(): List<String> {
+    override  fun getTrackIDList(): List<String> {
         val json = prefs.getString(KEY_HISTORY, null)
 
         if (json.isNullOrBlank()) {
@@ -47,7 +48,7 @@ class SearchHistory (private val context: Context) {
         }
     }
 
-     fun clearTrack(){
+    override    fun clearTrack(){
         prefs.edit()
             .remove(KEY_HISTORY)
             .apply()
