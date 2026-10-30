@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -18,31 +19,19 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.data.dto.TrackSearchRequest
-import com.practicum.playlistmaker.data.dto.iTunesResponse
-import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
-import com.practicum.playlistmaker.data.network.SearchHistory
+import com.practicum.playlistmaker.domain.models.TrackRepository
 import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.domain.models.TrackConverter
-import com.practicum.playlistmaker.domain.utils.AppConst
-import com.practicum.playlistmaker.domain.utils.searchDebounce
+import com.practicum.playlistmaker.domain.models.AppConst
+import com.practicum.playlistmaker.domain.models.PlayTrackInteractor
+import com.practicum.playlistmaker.domain.models.SearchTracksInteractor
 import com.practicum.playlistmaker.presentation.TrackAdapter
 import kotlin.concurrent.thread
 
 
 class SearchActivity : AppCompatActivity() {
 
-    private val handler = Handler(Looper.getMainLooper())
     private lateinit var inputEditText: EditText
-    private val searchRunnable = Runnable {
-        val currentText = inputEditText.text.toString()
-        if (currentText.isNotEmpty()) {
-            performSearch()
-        }
-    }
-
     var processingClick = false
-
 
     var saveText : String = ""
     private var lastFailedQuery: String? = null // здесь запоминаем последний запрос для кнопки Обновить
@@ -53,17 +42,26 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyContainer: LinearLayout
     private lateinit var clearHistoryButton: FrameLayout
     private lateinit var progressBar: ProgressBar
-    private lateinit var searchHistory: SearchHistory
     private lateinit var clearButton: ImageView
     private lateinit var backButton: LinearLayout
-            private val trackadapter = TrackAdapter { clickedTrack -> handleItemClick(clickedTrack) }
+    private val trackadapter = TrackAdapter { clickedTrack -> handleItemClick(clickedTrack) }
 
-    private val client = Creator.createClient()
-    private val converter = Creator.createTrackConverter()
+    private lateinit var repository: TrackRepository
+    private lateinit var searchInteractor: SearchTracksInteractor
+    private lateinit var searchDebouncer: SearchDebouncer
+    private lateinit var playTrackInteractor: PlayTrackInteractor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        repository = Creator.createTrackRepository(this)
+        searchInteractor = Creator.createSearchTracksInteractor(this)
+        searchDebouncer = SearchDebouncer(this)
+        playTrackInteractor = Creator.createPlayTrackInteractor(this)
+
+
+
         setContentView(R.layout.activity_search)
 
         progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -88,10 +86,8 @@ class SearchActivity : AppCompatActivity() {
 
         clearButton = findViewById<ImageView>(R.id.clearIcon)
 
-        searchHistory = Creator.createSearchHistory(this)
-
         if (inputEditText.text.toString().isEmpty()) {
-            val historyIds = searchHistory.getTrackIDList()
+            val historyIds = repository.getHistory()
             loadHistoryTracksFromApi(historyIds)
         }
 
@@ -128,14 +124,14 @@ class SearchActivity : AppCompatActivity() {
 // если строка поиска пуста, то показываем историю
                     historyContainer.visibility = View.VISIBLE
                     clearHistoryButton.visibility = View.VISIBLE
-                     val historyIds = searchHistory.getTrackIDList()
+                     val historyIds = repository.getHistory()
                       loadHistoryTracksFromApi(historyIds)
                 }else {
    // если строка поиска заполняется пользователем, то историю убираем
                     historyContainer.visibility = View.GONE
                     clearHistoryButton.visibility = View.GONE
    // Делаем задержку в поле ввода
-                    searchRunnable.searchDebounce(AppConst.SEARCH_DEBOUNCE_DELAY)
+                     searchDebouncer.triggerSearchWithDelay(AppConst.SEARCH_DEBOUNCE_DELAY)
                 }
             }
         }
@@ -166,22 +162,17 @@ class SearchActivity : AppCompatActivity() {
 
             thread {
                 try {
-                    val request = TrackSearchRequest(expression = query)
-                    val response = client.doRequest(request)
 
+                    val tracksList = searchInteractor.makeQuery(query)
                     runOnUiThread {
-                    progressBar.visibility = View.GONE
+                        progressBar.visibility = View.GONE
 
-                    if (response.resultCode == 200 && response.body != null) {
-                        val rawData = response.body as? iTunesResponse
-                        val dtoList = rawData?.results ?: emptyList()
-                        val tracksList = dtoList.map { dto -> converter.convertSingle(dto) }
-
-                        if (dtoList.isNotEmpty()) {
+                        if (tracksList.isNotEmpty()) {
                             trackadapter.submitList(tracksList)
                             emptyStateView.visibility = View.GONE
                             noInternetView.visibility = View.GONE
                             recyclerView.visibility = View.VISIBLE
+                            lastFailedQuery = null
                         } else {
                             // показываем заглушку «ничего не найдено»
                             emptyStateView.visibility = View.VISIBLE
@@ -189,16 +180,10 @@ class SearchActivity : AppCompatActivity() {
                             noInternetView.visibility = View.GONE
                             trackadapter.submitList(emptyList())
                         }
-                    } else {
-                        // поиск завершен ничем
-                        emptyStateView.visibility = View.VISIBLE
-                        recyclerView.visibility = View.GONE
-                        noInternetView.visibility = View.GONE
-                        trackadapter.submitList(emptyList())
                     }
-                    }
-                } catch (e: Exception) {
 
+                } catch (e: Exception) {
+                    lastFailedQuery = query
                     runOnUiThread {
                         progressBar.visibility = View.GONE
                         noInternetView.visibility = View.VISIBLE
@@ -264,21 +249,12 @@ class SearchActivity : AppCompatActivity() {
           for (idStr in historyIds) {
               val id = idStr.toLongOrNull() ?: continue
 
-              val response = client.getTrackById(id)
-
-              if (response.resultCode == 200 && response.body != null) {
-
-                  val rawData = response.body as? iTunesResponse
-                  val dtoList = rawData?.results ?: emptyList()
-
-                  if (dtoList.isNotEmpty()) {
-                      val dto = dtoList[0] // Берем первый (и единственный) трек
-                      val trackForHistory = converter.convertSingle(dto).copy(mark = 1)
-                      loadedTracks.add(trackForHistory)
-                  }
-              } else {
+              val track = repository.getTrackById(id)
+              if (track != null) {
+                  loadedTracks.add(track.copy(mark = 1)) //трек существует в истории, mark = 1
               }
           }
+
           runOnUiThread {
               if (loadedTracks.isNotEmpty()) {
                   trackadapter.submitList(loadedTracks.toList())
@@ -294,7 +270,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun clearHistory() {
-        searchHistory.clearTrack()
+        repository.clearHistory()
         trackadapter.submitList(emptyList())
         historyContainer.visibility = View.GONE
         clearHistoryButton.visibility = View.GONE
@@ -306,15 +282,20 @@ class SearchActivity : AppCompatActivity() {
             return
         }
         processingClick = true
-        searchHistory.addTrack(track.trackId.toString())
 
-        if (track.mark == 1) {
-            inputEditText.setText(track.trackName)
+        val result = playTrackInteractor.workTrack(track)
+
+        if (result.shouldSearch) {
+            inputEditText.setText(result.searchQuery)
             performSearch()
-            historyContainer.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
-        } else {
+
+            if (result.shouldHideHistory) {
+                historyContainer.visibility = View.GONE
+                clearHistoryButton.visibility = View.GONE
+            }
         }
+
+
         // Отправляем поля трека в AudioPlayer
         val intent = Intent(this@SearchActivity, AudioPlayer::class.java)
         intent.putExtra("track", track)
@@ -324,4 +305,30 @@ class SearchActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             processingClick = false}, AppConst.TRACK_CLICK_DEBOUNCE_DELAY)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        searchDebouncer.cancel()
+    }
+
+    private class SearchDebouncer(private val activity: SearchActivity) {
+
+        private val handler = Handler(Looper.getMainLooper())
+        private val findRunnable = Runnable {
+            if (activity.isFinishing || activity.isDestroyed) {
+                return@Runnable
+            }
+            activity.performSearch()
+        }
+
+        fun triggerSearchWithDelay(delayMs: Long) {
+            handler.removeCallbacks(findRunnable)
+            handler.postDelayed(findRunnable, delayMs)
+        }
+
+        fun cancel() {
+            handler.removeCallbacks(findRunnable)
+        }
+    }
+
 }

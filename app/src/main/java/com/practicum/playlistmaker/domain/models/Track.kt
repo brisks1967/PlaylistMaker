@@ -20,8 +20,5 @@ data class Track(
     val mark: Int  = 0  // метка 1 - из истории, 0 - не из истории
 ): Parcelable
 {
-    // замена URL - картинки 100х100 на 512х512
-    fun getCoverArtwork(): String? {
-        return artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
-    }
+
 }

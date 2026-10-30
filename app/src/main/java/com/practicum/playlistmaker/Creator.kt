@@ -1,15 +1,19 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
-import android.widget.ImageView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
 import com.practicum.playlistmaker.data.network.SearchHistory
-import com.practicum.playlistmaker.domain.models.TrackConverter
+import com.practicum.playlistmaker.data.network.ThemeRepositoryImpl
+import com.practicum.playlistmaker.data.dto.TrackConverter
+import com.practicum.playlistmaker.data.network.TrackRepositoryImpl
+import com.practicum.playlistmaker.domain.models.SearchHistoryRepository
+import com.practicum.playlistmaker.domain.models.ThemeRepository
+import com.practicum.playlistmaker.domain.models.TrackRepository
+import com.practicum.playlistmaker.domain.models.PlayTrackInteractor
+import com.practicum.playlistmaker.domain.models.SearchTracksInteractor
+
 
 object Creator {
-
 
     fun createClient(): RetrofitNetworkClient {
         return RetrofitNetworkClient()
@@ -18,28 +22,29 @@ object Creator {
         return TrackConverter()
     }
 
-    fun createSearchHistory(context: Context): SearchHistory {
-          return SearchHistory(context)
+    //Обработка поиска треков
+    fun createSearchTracksInteractor(context: Context): SearchTracksInteractor {
+        val client = createTrackRepository(context)
+        return SearchTracksInteractor(client)
     }
 
+    //обработка Истории поиска треков - history
+    fun createTrackRepository(context: Context): TrackRepository {
+        val client = createClient()
+        val converter = createTrackConverter()
+        val history = createHistory(context)
 
-
-
-        // Логика расчета радиуса вынесена сюда
-        fun calculateRadiusPx(context: Context, radiusDp: Int): Int {
-            val density = context.resources.displayMetrics.density
-            return (radiusDp * density).toInt()
-        }
-
-    fun loadCoverImageGlideAP(context: Context, imageView: ImageView, url: String?) {
-        val radiusPx = calculateRadiusPx(context, 8)
-
-             Glide.with(context)
-            .load(url)
-            .placeholder(R.drawable.image_hint_ap) // Что показать, пока грузится
-            .transform(RoundedCorners(radiusPx)) // скругления углов
-            .into(imageView)    // Куда вставить картинку
+        return TrackRepositoryImpl(client, converter, history)
+    }
+    fun createThemeRepository(context: Context): ThemeRepository {
+        return ThemeRepositoryImpl(context)
+    }
+    fun createPlayTrackInteractor(context: Context): PlayTrackInteractor {
+        val history = createHistory(context)
+        return PlayTrackInteractor(history)
+    }
+    private fun createHistory(context: Context): SearchHistoryRepository {
+        return SearchHistory(context)
     }
 
-
-}
+    }

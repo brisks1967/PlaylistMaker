@@ -1,13 +1,9 @@
-package com.practicum.playlistmaker.domain.models
+package com.practicum.playlistmaker.data.dto
 
-import android.os.Parcelable
-import android.view.View
 import com.practicum.playlistmaker.TrackDTO
-import kotlinx.parcelize.Parcelize
+import com.practicum.playlistmaker.domain.models.Track
 
 class TrackConverter {
-
-
     fun convertSingle(dto: TrackDTO): Track {
         return Track(
             trackName = dto.trackName,
@@ -22,17 +18,8 @@ class TrackConverter {
             previewUrl = dto.previewUrl
         )
     }
-
-
     fun convertDateInYear(releaseDate:String?) :String {
-        var yearTrackView:String
-        val year = releaseDate?.substring(0, 4)
-        if (!year.isNullOrBlank()) {
-            yearTrackView= year
-        } else {
-            yearTrackView= ""
-        }
-        return yearTrackView
+        return releaseDate?.take(4) ?: ""
     }
 
 }

@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
@@ -17,7 +18,8 @@ import android.os.Handler
 import android.os.Looper
 import com.practicum.playlistmaker.domain.models.Track
 import java.util.Locale
-import com.practicum.playlistmaker.domain.utils.AppConst
+import com.practicum.playlistmaker.domain.models.AppConst
+
 
 class AudioPlayer  : AppCompatActivity() {
 
@@ -226,9 +228,9 @@ class AudioPlayer  : AppCompatActivity() {
             yearTrackView.visibility = View.GONE
         }
 
-        //Обложка
-        val coverUrl = track.getCoverArtwork()
-        Creator.loadCoverImageGlideAP(this@AudioPlayer,imageTrackAPView,coverUrl)
+        //Обложка -   замена URL - картинки 100х100 на 512х512
+        val coverUrl = track.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
+        loadCoverImageGlideAP(this@AudioPlayer,imageTrackAPView,coverUrl)
 
 
         val url : String? = track.previewUrl
@@ -242,4 +244,21 @@ class AudioPlayer  : AppCompatActivity() {
             // Ссылки нет (null или пустая). Ничего не делаем
           }
     }
+
+    // Логика расчета радиуса для AP вынесена сюда
+    fun calculateRadiusPx(context: Context, radiusDp: Int): Int {
+        val density = context.resources.displayMetrics.density
+        return (radiusDp * density).toInt()
+    }
+
+    fun loadCoverImageGlideAP(context: Context, imageView: ImageView, url: String?) {
+        val radiusPx = calculateRadiusPx(context, 8)
+
+        Glide.with(context)
+            .load(url)
+            .placeholder(R.drawable.image_hint_ap) // Что показать, пока грузится
+            .transform(RoundedCorners(radiusPx)) // скругления углов
+            .into(imageView)    // Куда вставить картинку
+    }
+
 }
