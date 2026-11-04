@@ -1,8 +1,12 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.activity
 
 import android.content.Context
 import android.icu.text.SimpleDateFormat
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
@@ -12,14 +16,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import android.media.MediaPlayer
-import android.net.Uri
-import android.os.Handler
-import android.os.Looper
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.ui_const.AppConst
 import java.util.Locale
-import com.practicum.playlistmaker.domain.models.AppConst
-
 
 class AudioPlayer  : AppCompatActivity() {
 
@@ -48,7 +48,7 @@ class AudioPlayer  : AppCompatActivity() {
         override fun run() {
             val currentPosition = mediaPlayer.currentPosition
 
-                timeText =SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+                timeText = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
                 secondsTextView.text = timeText
 
             if (mediaPlayer.isPlaying) {

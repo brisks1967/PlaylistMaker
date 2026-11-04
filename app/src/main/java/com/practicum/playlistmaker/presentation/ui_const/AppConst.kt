@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.domain.models
+package com.practicum.playlistmaker.presentation.ui_const
 
 object AppConst {
     const val SEARCH_DEBOUNCE_DELAY = 2000L // задержка обработки поля ввода - поиск трека

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.activity
 
 import android.content.Context
 import android.content.Intent
@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -19,14 +18,14 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.domain.models.TrackRepository
+import com.practicum.playlistmaker.presentation.app.Creator
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.api.InterfacePlayTrackInteractor
+import com.practicum.playlistmaker.domain.api.InterfaceSearchTracksInteractor
 import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.domain.models.AppConst
-import com.practicum.playlistmaker.domain.models.PlayTrackInteractor
-import com.practicum.playlistmaker.domain.models.SearchTracksInteractor
-import com.practicum.playlistmaker.presentation.TrackAdapter
+import com.practicum.playlistmaker.presentation.ui_const.AppConst
+import com.practicum.playlistmaker.presentation.adapter_veiwholder.TrackAdapter
 import kotlin.concurrent.thread
-
 
 class SearchActivity : AppCompatActivity() {
 
@@ -46,23 +45,18 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var backButton: LinearLayout
     private val trackadapter = TrackAdapter { clickedTrack -> handleItemClick(clickedTrack) }
 
-    private lateinit var repository: TrackRepository
-    private lateinit var searchInteractor: SearchTracksInteractor
+    private lateinit var searchInteractor: InterfaceSearchTracksInteractor
     private lateinit var searchDebouncer: SearchDebouncer
-    private lateinit var playTrackInteractor: PlayTrackInteractor
+    private lateinit var playTrackInteractor: InterfacePlayTrackInteractor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_search)
 
-        repository = Creator.createTrackRepository(this)
         searchInteractor = Creator.createSearchTracksInteractor(this)
         searchDebouncer = SearchDebouncer(this)
         playTrackInteractor = Creator.createPlayTrackInteractor(this)
-
-
-
-        setContentView(R.layout.activity_search)
 
         progressBar = findViewById<ProgressBar>(R.id.progressBar)
         progressBar.visibility = View.GONE
@@ -83,12 +77,52 @@ class SearchActivity : AppCompatActivity() {
         }
 
         inputEditText = findViewById<EditText>(R.id.inputEditText)
-
         clearButton = findViewById<ImageView>(R.id.clearIcon)
 
-        if (inputEditText.text.toString().isEmpty()) {
-            val historyIds = repository.getHistory()
-            loadHistoryTracksFromApi(historyIds)
+        thread {
+            val tracks = searchInteractor.getHistoryTracks()
+
+            runOnUiThread {
+                trackadapter.submitList(tracks)
+
+            if (tracks.isEmpty()) {
+            historyContainer.visibility = View.GONE
+            clearHistoryButton.visibility = View.GONE
+            recyclerView.visibility = View.GONE
+        } else {
+            historyContainer.visibility = View.VISIBLE
+            clearHistoryButton.visibility = View.VISIBLE
+            recyclerView.visibility = View.VISIBLE
+            emptyStateView.visibility = View.GONE
+            noInternetView.visibility = View.GONE }
+            }
+        }
+
+
+        // устанавливаем слушателя нажатия на Трек
+        clearButton.setOnClickListener {
+            inputEditText.setText("")
+
+            // Скрываем клавиатуру
+            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+
+            val tracks = searchInteractor.getHistoryTracks()
+            trackadapter.submitList(tracks)
+
+            // Обновляем видимость элементов интерфейса
+            if (tracks.isEmpty()) {
+                historyContainer.visibility = View.GONE
+                clearHistoryButton.visibility = View.GONE
+                recyclerView.visibility = View.GONE
+            } else {
+                historyContainer.visibility = View.VISIBLE
+                clearHistoryButton.visibility = View.VISIBLE
+                recyclerView.visibility = View.VISIBLE
+                emptyStateView.visibility = View.GONE
+                noInternetView.visibility = View.GONE
+            }
+
         }
 
         resetInternet = findViewById<ImageView>(R.id.resetInternet)
@@ -98,20 +132,10 @@ class SearchActivity : AppCompatActivity() {
         // Обработка кнопки «Назад»
         backButton = findViewById<LinearLayout>(R.id.containerSearchBack)
         backButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
             finish()
         }
 
-        // устанавливаем слушателя нажатия на Трек
-        clearButton.setOnClickListener {
-            inputEditText.setText("")
 
-            // Скрываем клавиатуру
-           val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
-
-          // Запускаем обновление через TextWatcher
-        }
 
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -121,17 +145,13 @@ class SearchActivity : AppCompatActivity() {
                 clearButton.visibility = clearButtonVisibility(s)
 
                 if (saveText.isEmpty()) {
-// если строка поиска пуста, то показываем историю
-                    historyContainer.visibility = View.VISIBLE
-                    clearHistoryButton.visibility = View.VISIBLE
-                     val historyIds = repository.getHistory()
-                      loadHistoryTracksFromApi(historyIds)
-                }else {
-   // если строка поиска заполняется пользователем, то историю убираем
+                    loadAndShowHistory()
+                } else {
+                    // Текст есть -> убираем историю, запускаем поиск
                     historyContainer.visibility = View.GONE
                     clearHistoryButton.visibility = View.GONE
-   // Делаем задержку в поле ввода
-                     searchDebouncer.triggerSearchWithDelay(AppConst.SEARCH_DEBOUNCE_DELAY)
+                   //задержка поиска пока пользователь печатает (чтобы не был поиск посимвольно)
+                    searchDebouncer.triggerSearchWithDelay(AppConst.SEARCH_DEBOUNCE_DELAY)
                 }
             }
         }
@@ -150,6 +170,29 @@ class SearchActivity : AppCompatActivity() {
                 true // сообщение системе
             }else {
                 false  // Если это была не кнопка пуск, система разбирается
+            }
+        }
+    }
+
+    private fun loadAndShowHistory() {
+        searchDebouncer.cancel()
+        thread {
+            // Получаем историю
+            val tracks = searchInteractor.getHistoryTracks()
+            //логика показа или не показа истории
+            runOnUiThread {
+                trackadapter.submitList(tracks)
+                if (tracks.isEmpty()) {
+                    historyContainer.visibility = View.GONE
+                    clearHistoryButton.visibility = View.GONE
+                    recyclerView.visibility = View.GONE
+                } else {
+                    historyContainer.visibility = View.VISIBLE
+                    clearHistoryButton.visibility = View.VISIBLE
+                    recyclerView.visibility = View.VISIBLE
+                    emptyStateView.visibility = View.GONE
+                    noInternetView.visibility = View.GONE
+                }
             }
         }
     }
@@ -229,48 +272,8 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-// Обработка блока истории
-    private fun loadHistoryTracksFromApi(historyIds: List<String>) {
-        val loadedTracks = mutableListOf<Track>()
-
-        if (historyIds.isEmpty()) {
-            runOnUiThread {
-                trackadapter.submitList(emptyList())
-                historyContainer.visibility = View.GONE
-                clearHistoryButton.visibility = View.GONE
-            }
-            return
-        }
-
-       historyContainer.visibility = View.VISIBLE
-       clearHistoryButton.visibility = View.VISIBLE
-
-      thread {
-          for (idStr in historyIds) {
-              val id = idStr.toLongOrNull() ?: continue
-
-              val track = repository.getTrackById(id)
-              if (track != null) {
-                  loadedTracks.add(track.copy(mark = 1)) //трек существует в истории, mark = 1
-              }
-          }
-
-          runOnUiThread {
-              if (loadedTracks.isNotEmpty()) {
-                  trackadapter.submitList(loadedTracks.toList())
-                  historyContainer.visibility = View.VISIBLE
-                  clearHistoryButton.visibility = View.VISIBLE
-              } else {
-                  trackadapter.submitList(emptyList())
-                  historyContainer.visibility = View.GONE
-                  clearHistoryButton.visibility = View.GONE
-              }
-          }
-      }
-    }
-
     private fun clearHistory() {
-        repository.clearHistory()
+        searchInteractor.clearHistory()
         trackadapter.submitList(emptyList())
         historyContainer.visibility = View.GONE
         clearHistoryButton.visibility = View.GONE

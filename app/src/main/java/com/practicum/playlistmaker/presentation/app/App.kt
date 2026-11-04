@@ -1,9 +1,9 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.app
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.domain.models.ThemeRepository
-
+import com.practicum.playlistmaker.presentation.app.Creator
+import com.practicum.playlistmaker.domain.api.ThemeRepository
 
 class App : Application() {
 

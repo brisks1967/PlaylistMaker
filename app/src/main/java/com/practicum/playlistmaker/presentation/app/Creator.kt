@@ -1,17 +1,18 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.app
 
 import android.content.Context
-import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
-import com.practicum.playlistmaker.data.network.SearchHistory
-import com.practicum.playlistmaker.data.network.ThemeRepositoryImpl
 import com.practicum.playlistmaker.data.dto.TrackConverter
+import com.practicum.playlistmaker.data.local.SearchHistory
+import com.practicum.playlistmaker.data.local.ThemeRepositoryImpl
+import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
 import com.practicum.playlistmaker.data.network.TrackRepositoryImpl
-import com.practicum.playlistmaker.domain.models.SearchHistoryRepository
-import com.practicum.playlistmaker.domain.models.ThemeRepository
-import com.practicum.playlistmaker.domain.models.TrackRepository
-import com.practicum.playlistmaker.domain.models.PlayTrackInteractor
-import com.practicum.playlistmaker.domain.models.SearchTracksInteractor
-
+import com.practicum.playlistmaker.domain.api.InterfacePlayTrackInteractor
+import com.practicum.playlistmaker.domain.api.InterfaceSearchTracksInteractor
+import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
+import com.practicum.playlistmaker.domain.api.ThemeRepository
+import com.practicum.playlistmaker.domain.api.TrackRepository
+import com.practicum.playlistmaker.domain.impl.PlayTrackInteractor
+import com.practicum.playlistmaker.domain.impl.SearchTracksInteractor
 
 object Creator {
 
@@ -23,9 +24,9 @@ object Creator {
     }
 
     //Обработка поиска треков
-    fun createSearchTracksInteractor(context: Context): SearchTracksInteractor {
-        val client = createTrackRepository(context)
-        return SearchTracksInteractor(client)
+    fun createSearchTracksInteractor(context: Context): InterfaceSearchTracksInteractor {
+        val repo = createTrackRepository(context)
+        return SearchTracksInteractor(repo)
     }
 
     //обработка Истории поиска треков - history
@@ -39,7 +40,7 @@ object Creator {
     fun createThemeRepository(context: Context): ThemeRepository {
         return ThemeRepositoryImpl(context)
     }
-    fun createPlayTrackInteractor(context: Context): PlayTrackInteractor {
+    fun createPlayTrackInteractor(context: Context): InterfacePlayTrackInteractor {
         val history = createHistory(context)
         return PlayTrackInteractor(history)
     }

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.presentation
+package com.practicum.playlistmaker.presentation.adapter_veiwholder
 
 import android.view.View
 import android.widget.ImageView

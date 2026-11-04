@@ -1,10 +1,10 @@
-package com.practicum.playlistmaker.data.network
+package com.practicum.playlistmaker.data.local
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.domain.models.SearchHistoryRepository
+import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
 
 const val TRACK_HISTORY = "track_history"
 const val KEY_HISTORY = "search_history_key"

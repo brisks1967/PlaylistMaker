@@ -2,10 +2,10 @@ package com.practicum.playlistmaker.data.network
 
 import com.practicum.playlistmaker.data.dto.TrackSearchRequest
 import com.practicum.playlistmaker.data.dto.iTunesResponse
-import com.practicum.playlistmaker.domain.models.SearchHistoryRepository
+import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.data.dto.TrackConverter
-import com.practicum.playlistmaker.domain.models.TrackRepository
+import com.practicum.playlistmaker.domain.api.TrackRepository
 
 class TrackRepositoryImpl (
     private val client: RetrofitNetworkClient,
@@ -57,5 +57,10 @@ class TrackRepositoryImpl (
 
     override fun clearHistory() {
         history.clearTrack()
+    }
+
+    override fun getTrackListByIds(ids: List<Long>): List<Track> {
+        // Берем каждый ID, пытаемся получить трек и оставляем только те, что нашлись
+        return ids.mapNotNull { id -> getTrackById(id)}
     }
 }

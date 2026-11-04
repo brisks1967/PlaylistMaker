@@ -1,11 +1,12 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.activity
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
-
+import androidx.appcompat.app.AppCompatActivity
+import com.practicum.playlistmaker.presentation.activity.LibActivity
+import com.practicum.playlistmaker.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 // Запуск Activity  - Library - Lib  - МЕТОД 2
         val screenLibrary = findViewById<Button>(R.id.lib)
         screenLibrary.setOnClickListener {
-            val intent =  Intent(this@MainActivity, LibActivity::class.java)
+            val intent = Intent(this@MainActivity, LibActivity::class.java)
             // Запускаем новую Activity Library - Lib
             startActivity(intent)
         }

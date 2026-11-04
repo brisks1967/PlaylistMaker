@@ -1,21 +1,27 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.practicum.playlistmaker.domain.models.AppConst.PRACTICUM_PREFERENCES
-import com.practicum.playlistmaker.domain.models.AppConst.THEME_IS_DARK_KEY
-
+import com.practicum.playlistmaker.presentation.app.App
+import com.practicum.playlistmaker.presentation.app.Creator
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.api.ThemeRepository
 
 class SettingsActivity : AppCompatActivity()  {
+
+    private lateinit var themeRepository: ThemeRepository
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_settings)
+
+            // получаем состояние темы через репозиторий
+            themeRepository = Creator.createThemeRepository(this)
 
             // Обработка кнопки «Назад»
             val backButton = findViewById<LinearLayout>(R.id.btn_settings)
@@ -26,11 +32,10 @@ class SettingsActivity : AppCompatActivity()  {
             }
 
            // Обработка кнопки «Темная тема»
-            val sharedPrefs = getSharedPreferences(PRACTICUM_PREFERENCES, MODE_PRIVATE)
 
             val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitch)
 
-            val isDarkThemeSaved = sharedPrefs.getBoolean(THEME_IS_DARK_KEY, false)
+            val isDarkThemeSaved = themeRepository.isDarkThemeEnabled()
 
             themeSwitcher.setChecked(isDarkThemeSaved)
 

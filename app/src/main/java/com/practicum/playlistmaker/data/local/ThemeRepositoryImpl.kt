@@ -1,8 +1,8 @@
-package com.practicum.playlistmaker.data.network
+package com.practicum.playlistmaker.data.local
 
 import android.content.Context
-import com.practicum.playlistmaker.domain.models.AppConst
-import com.practicum.playlistmaker.domain.models.ThemeRepository
+import com.practicum.playlistmaker.domain.api.ThemeRepository
+import com.practicum.playlistmaker.presentation.ui_const.AppConst
 
 class ThemeRepositoryImpl(
     private val context: Context

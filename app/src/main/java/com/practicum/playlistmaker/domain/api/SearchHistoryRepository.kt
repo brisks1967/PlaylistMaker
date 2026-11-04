@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.domain.models
+package com.practicum.playlistmaker.domain.api
 
 interface SearchHistoryRepository {
     fun addTrack(id: String)
