@@ -8,7 +8,7 @@ import com.practicum.playlistmaker.data.dto.TrackConverter
 import com.practicum.playlistmaker.domain.api.TrackRepository
 
 class TrackRepositoryImpl (
-    private val client: RetrofitNetworkClient,
+    private val client: NetworkClient,
     private val converter: TrackConverter,
     private val history: SearchHistoryRepository
 ) : TrackRepository

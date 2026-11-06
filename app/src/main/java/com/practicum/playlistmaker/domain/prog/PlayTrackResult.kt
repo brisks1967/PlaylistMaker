@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.dto
+package com.practicum.playlistmaker.domain.prog
 
 data class PlayTrackResult(
     val shouldSearch: Boolean,

@@ -10,8 +10,4 @@ object AppConst {
     const val STATE_PAUSED = 3
     const val THREAD_DELAY = 300L // задержка обновления таймера
     const val THREAD_DELAY_PLAY_BUTTON = 300L // задержка клика по кнопке PLAY
-
-    const val THEME_IS_DARK_KEY= "is_dark_theme" // ключ для светлой-темной темы
-
-    const val PRACTICUM_PREFERENCES = "practicum_preferences"
 }

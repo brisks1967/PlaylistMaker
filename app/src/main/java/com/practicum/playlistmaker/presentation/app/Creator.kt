@@ -13,13 +13,14 @@ import com.practicum.playlistmaker.domain.api.ThemeRepository
 import com.practicum.playlistmaker.domain.api.TrackRepository
 import com.practicum.playlistmaker.domain.impl.PlayTrackInteractor
 import com.practicum.playlistmaker.domain.impl.SearchTracksInteractor
+import com.practicum.playlistmaker.domain.impl.SettingsInteractor
 
 object Creator {
 
-    fun createClient(): RetrofitNetworkClient {
+    private fun createClient(): RetrofitNetworkClient {
         return RetrofitNetworkClient()
     }
-    fun createTrackConverter(): TrackConverter {
+    private fun createTrackConverter(): TrackConverter {
         return TrackConverter()
     }
 
@@ -37,15 +38,20 @@ object Creator {
 
         return TrackRepositoryImpl(client, converter, history)
     }
-    fun createThemeRepository(context: Context): ThemeRepository {
-        return ThemeRepositoryImpl(context)
-    }
+
     fun createPlayTrackInteractor(context: Context): InterfacePlayTrackInteractor {
         val history = createHistory(context)
         return PlayTrackInteractor(history)
     }
     private fun createHistory(context: Context): SearchHistoryRepository {
         return SearchHistory(context)
+    }
+    fun createThemeRepository(context: Context): ThemeRepository {
+        return ThemeRepositoryImpl(context)
+    }
+    fun createThemeInteractor(context: Context): SettingsInteractor {
+        val repository = createThemeRepository(context)
+        return SettingsInteractor (repository)
     }
 
     }

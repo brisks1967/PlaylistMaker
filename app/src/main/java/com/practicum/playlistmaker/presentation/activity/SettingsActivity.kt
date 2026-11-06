@@ -10,18 +10,18 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.presentation.app.App
 import com.practicum.playlistmaker.presentation.app.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.domain.api.ThemeRepository
+
 
 class SettingsActivity : AppCompatActivity()  {
 
-    private lateinit var themeRepository: ThemeRepository
 
-        override fun onCreate(savedInstanceState: Bundle?) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_settings)
 
             // получаем состояние темы через репозиторий
-            themeRepository = Creator.createThemeRepository(this)
+           val isDark = Creator.createThemeInteractor(this)
 
             // Обработка кнопки «Назад»
             val backButton = findViewById<LinearLayout>(R.id.btn_settings)
@@ -35,7 +35,8 @@ class SettingsActivity : AppCompatActivity()  {
 
             val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitch)
 
-            val isDarkThemeSaved = themeRepository.isDarkThemeEnabled()
+
+            val isDarkThemeSaved = isDark.isDarkThemeEnabled()
 
             themeSwitcher.setChecked(isDarkThemeSaved)
 

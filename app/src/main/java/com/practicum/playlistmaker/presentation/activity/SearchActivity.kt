@@ -98,7 +98,6 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-
         // устанавливаем слушателя нажатия на Трек
         clearButton.setOnClickListener {
             inputEditText.setText("")
@@ -122,8 +121,8 @@ class SearchActivity : AppCompatActivity() {
                 emptyStateView.visibility = View.GONE
                 noInternetView.visibility = View.GONE
             }
-
         }
+
 
         resetInternet = findViewById<ImageView>(R.id.resetInternet)
         resetInternet.visibility = View.GONE

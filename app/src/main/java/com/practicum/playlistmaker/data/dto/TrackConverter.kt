@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.data.dto
 
-import com.practicum.playlistmaker.data.dto.TrackDTO
 import com.practicum.playlistmaker.domain.models.Track
 
 class TrackConverter {
@@ -21,5 +20,4 @@ class TrackConverter {
     fun convertDateInYear(releaseDate:String?) :String {
         return releaseDate?.take(4) ?: ""
     }
-
 }

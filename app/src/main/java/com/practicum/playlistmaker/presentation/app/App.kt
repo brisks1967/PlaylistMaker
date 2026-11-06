@@ -2,21 +2,20 @@ package com.practicum.playlistmaker.presentation.app
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.presentation.app.Creator
-import com.practicum.playlistmaker.domain.api.ThemeRepository
+import com.practicum.playlistmaker.domain.impl.SettingsInteractor
 
 class App : Application() {
 
-    private lateinit var themeRepository: ThemeRepository
+    lateinit var isDark: SettingsInteractor
 
     override fun onCreate() {
         super.onCreate()
-        themeRepository = Creator.createThemeRepository(this)
+        isDark = Creator.createThemeInteractor(this)
         applySavedTheme()
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
-        themeRepository.setDarkThemeEnabled(darkThemeEnabled)
+        isDark.setDarkTheme(darkThemeEnabled)
 
             if (darkThemeEnabled) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -27,7 +26,7 @@ class App : Application() {
 
     private fun applySavedTheme() {
 
-            if (themeRepository.isDarkThemeEnabled()) {
+            if (isDark.isDarkThemeEnabled()) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else{
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

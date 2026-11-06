@@ -14,7 +14,6 @@ data class TrackDTO(
     val releaseDate: String?, //год релиза
     val previewUrl: String // Часть трека для ознакомления
 
-
 )
 
 

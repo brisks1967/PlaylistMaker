@@ -31,7 +31,7 @@ class RetrofitNetworkClient : NetworkClient {
         }
     }
 
-    fun getTrackById(id: Long): NetworkResponse {
+    override fun getTrackById(id: Long): NetworkResponse {
         try {
             val resp = iTuneService.searchTracksID(id).execute()
             val body = resp.body()
