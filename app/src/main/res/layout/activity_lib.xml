@@ -7,7 +7,7 @@
     android:id="@+id/mainLib"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LibActivity"
+    tools:context=".presentation.activity.LibActivity"
     android:background="@color/backgroundLib">
 
 

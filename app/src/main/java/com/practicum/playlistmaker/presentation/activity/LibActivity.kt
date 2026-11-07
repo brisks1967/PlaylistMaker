@@ -1,11 +1,8 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.activity
 
 import android.os.Bundle
-import android.app.Activity
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.practicum.playlistmaker.R
 
 class LibActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

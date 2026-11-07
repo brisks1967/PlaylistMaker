@@ -13,11 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
-        android:name=".App"
+        android:name=".presentation.app.App"
         >
 
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,14 +29,14 @@
 
 
         <activity
-            android:name=".SearchActivity"
+            android:name=".presentation.activity.SearchActivity"
             android:exported="false"
             android:label="Поиск">
 
         </activity>
 
         <activity
-            android:name=".LibActivity"
+            android:name=".presentation.activity.LibActivity"
             android:exported="false"
             android:label="Медиатека">
 
@@ -44,14 +44,14 @@
 
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".presentation.activity.SettingsActivity"
             android:exported="false"
             android:label="Настройки">
 
         </activity>
 
         <activity
-            android:name=".AudioPlayer"
+            android:name=".presentation.activity.AudioPlayer"
             android:exported="false"
             android:label="Аудио Плеер">
         </activity>
