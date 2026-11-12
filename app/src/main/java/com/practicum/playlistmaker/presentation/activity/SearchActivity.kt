@@ -15,123 +15,139 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.presentation.app.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivityMainBinding
+import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.domain.api.InterfacePlayTrackInteractor
 import com.practicum.playlistmaker.domain.api.InterfaceSearchTracksInteractor
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.ui_const.AppConst
 import com.practicum.playlistmaker.presentation.adapter_veiwholder.TrackAdapter
+import com.practicum.playlistmaker.ui.ViewModel.SearchViewModel
 import kotlin.concurrent.thread
 
 class SearchActivity : AppCompatActivity() {
 
-    private lateinit var inputEditText: EditText
+    private lateinit var binding: ActivitySearchBinding
     var processingClick = false
-
     var saveText : String = ""
-    private var lastFailedQuery: String? = null // здесь запоминаем последний запрос для кнопки Обновить
-    private lateinit var emptyStateView: LinearLayout
-    private lateinit var noInternetView: LinearLayout
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var resetInternet: ImageView
-    private lateinit var historyContainer: LinearLayout
-    private lateinit var clearHistoryButton: FrameLayout
-    private lateinit var progressBar: ProgressBar
-    private lateinit var clearButton: ImageView
-    private lateinit var backButton: LinearLayout
     private val trackadapter = TrackAdapter { clickedTrack -> handleItemClick(clickedTrack) }
 
-    private lateinit var searchInteractor: InterfaceSearchTracksInteractor
     private lateinit var searchDebouncer: SearchDebouncer
-    private lateinit var playTrackInteractor: InterfacePlayTrackInteractor
+
+    private val searchInteractor: InterfaceSearchTracksInteractor by lazy {
+        Creator.createSearchTracksInteractor(applicationContext)
+    }
+     private val playTrackInteractor: InterfacePlayTrackInteractor by lazy {
+        Creator.createPlayTrackInteractor(applicationContext)
+    }
+
+
+    private val viewModel: SearchViewModel by viewModels {
+        SearchViewModel.getFactory(searchInteractor,playTrackInteractor)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        searchDebouncer=SearchDebouncer()
 
-        searchInteractor = Creator.createSearchTracksInteractor(this)
-        searchDebouncer = SearchDebouncer(this)
-        playTrackInteractor = Creator.createPlayTrackInteractor(this)
+        // делаем наполнение блоков экрана
 
-        progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+        binding.recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerView.adapter = trackadapter
 
-        recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = trackadapter
-
-        emptyStateView = findViewById<LinearLayout>(R.id.emptyStateView)
-        noInternetView = findViewById<LinearLayout>(R.id.noInternet)
-        historyContainer = findViewById<LinearLayout>(R.id.historyBox)
-        historyContainer.visibility = View.GONE
-
-        clearHistoryButton = findViewById<FrameLayout>(R.id.clearHistoryButton)
-        clearHistoryButton.visibility = View.GONE
-        clearHistoryButton.setOnClickListener {
+        binding.historyBox.visibility = View.GONE
+        binding.clearHistoryButton.visibility = View.GONE
+        binding.clearHistoryButton.setOnClickListener {
             clearHistory()
         }
 
-        inputEditText = findViewById<EditText>(R.id.inputEditText)
-        clearButton = findViewById<ImageView>(R.id.clearIcon)
-
-        thread {
-            val tracks = searchInteractor.getHistoryTracks()
-
-            runOnUiThread {
-                trackadapter.submitList(tracks)
-
-            if (tracks.isEmpty()) {
-            historyContainer.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
-            recyclerView.visibility = View.GONE
-        } else {
-            historyContainer.visibility = View.VISIBLE
-            clearHistoryButton.visibility = View.VISIBLE
-            recyclerView.visibility = View.VISIBLE
-            emptyStateView.visibility = View.GONE
-            noInternetView.visibility = View.GONE }
+// Подписка на ошибки
+        viewModel.errorState.observe(this) { error ->
+            if (error != null) {
+                binding.noInternet.visibility = View.VISIBLE
+                binding.resetInternet.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+                binding.emptyStateView.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
+            } else {
+                binding.noInternet.visibility = View.GONE
             }
         }
 
+        // Подписка на загрузку прогресс бар (isLoading)
+        viewModel.isLoading.observe(this) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        //если активен поиск - подписка на поиск
+        viewModel.observeTracks.observe(this) { list ->
+            if (viewModel.currentQuery.value?.isNotEmpty() == true) {
+                trackadapter.submitList(list)
+                if (viewModel.errorState.value == null) {
+                if (list.isEmpty()) {
+                    binding.historyBox.visibility = View.GONE
+                    binding.clearHistoryButton.visibility = View.GONE
+                    binding.recyclerView.visibility = View.GONE
+                    binding.emptyStateView.visibility = View.VISIBLE
+                } else {
+                    binding.historyBox.visibility = View.GONE
+                    binding.clearHistoryButton.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.emptyStateView.visibility = View.GONE
+                    binding.noInternet.visibility = View.GONE
+                }
+                } else {
+                    // При ошибке скрываем заглушку пустого поиска
+                    binding.emptyStateView.visibility = View.GONE
+                    binding.recyclerView.visibility = View.GONE
+                }
+            }
+        }
+        // если поиска НЕТ, обрабатываем только историю - подписка на историю
+        viewModel.observeHistory.observe(this) { list ->
+
+                    trackadapter.submitList(list)
+                    if (list.isEmpty()) {
+                        binding.historyBox.visibility = View.GONE
+                        binding.clearHistoryButton.visibility = View.GONE
+                        binding.recyclerView.visibility = View.GONE
+                    } else {
+                        binding.historyBox.visibility = View.VISIBLE
+                        binding.clearHistoryButton.visibility = View.VISIBLE
+                        binding.recyclerView.visibility = View.VISIBLE
+                        binding.emptyStateView.visibility = View.GONE
+                    }
+        }
+       viewModel.loadHistory()
+
         // устанавливаем слушателя нажатия на Трек
-        clearButton.setOnClickListener {
-            inputEditText.setText("")
+        binding.clearIcon.setOnClickListener {
+            binding.inputEditText.setText("")
 
             // Скрываем клавиатуру
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
-
-            val tracks = searchInteractor.getHistoryTracks()
-            trackadapter.submitList(tracks)
-
-            // Обновляем видимость элементов интерфейса
-            if (tracks.isEmpty()) {
-                historyContainer.visibility = View.GONE
-                clearHistoryButton.visibility = View.GONE
-                recyclerView.visibility = View.GONE
-            } else {
-                historyContainer.visibility = View.VISIBLE
-                clearHistoryButton.visibility = View.VISIBLE
-                recyclerView.visibility = View.VISIBLE
-                emptyStateView.visibility = View.GONE
-                noInternetView.visibility = View.GONE
-            }
+            inputMethodManager?.hideSoftInputFromWindow(binding.inputEditText.windowToken, 0)
+            // обработка коллизии
+            viewModel.clearSearchAndLoadHistory()
         }
 
-
-        resetInternet = findViewById<ImageView>(R.id.resetInternet)
-        resetInternet.visibility = View.GONE
+        binding.resetInternet.visibility = View.GONE
         retryButton()
 
         // Обработка кнопки «Назад»
-        backButton = findViewById<LinearLayout>(R.id.containerSearchBack)
-        backButton.setOnClickListener {
-            finish()
+        binding.containerSearchBack.setOnClickListener {
+              finish()
         }
 
 
@@ -141,30 +157,29 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 saveText = s.toString()
-                clearButton.visibility = clearButtonVisibility(s)
+                binding.clearIcon.visibility = clearButtonVisibility(s)
 
                 if (saveText.isEmpty()) {
-                    loadAndShowHistory()
+                    searchDebouncer.cancel() // Отменяем отложенный поиск
+                    viewModel.loadHistory()  // ViewModel показывает историю
                 } else {
-                    // Текст есть -> убираем историю, запускаем поиск
-                    historyContainer.visibility = View.GONE
-                    clearHistoryButton.visibility = View.GONE
-                   //задержка поиска пока пользователь печатает (чтобы не был поиск посимвольно)
+                    //задержка поиска пока пользователь печатает (чтобы не был поиск посимвольно)
                     searchDebouncer.triggerSearchWithDelay(AppConst.SEARCH_DEBOUNCE_DELAY)
                 }
             }
         }
         // ввод пользователя посимвольно
-        inputEditText.addTextChangedListener(simpleTextWatcher)
+        binding.inputEditText.addTextChangedListener(simpleTextWatcher)
 
         // вводит и подтверждает ввод кнопкой
-        inputEditText.setOnEditorActionListener { _, actionId, _ ->
+        binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val query = binding.inputEditText.text.toString()
+                viewModel.search(query)
 
-                performSearch()
           // скрываем клавиатуру, т.к польз сказал что готово
                 val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+                inputMethodManager?.hideSoftInputFromWindow(binding.inputEditText.windowToken, 0)
 
                 true // сообщение системе
             }else {
@@ -173,70 +188,9 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadAndShowHistory() {
-        searchDebouncer.cancel()
-        thread {
-            // Получаем историю
-            val tracks = searchInteractor.getHistoryTracks()
-            //логика показа или не показа истории
-            runOnUiThread {
-                trackadapter.submitList(tracks)
-                if (tracks.isEmpty()) {
-                    historyContainer.visibility = View.GONE
-                    clearHistoryButton.visibility = View.GONE
-                    recyclerView.visibility = View.GONE
-                } else {
-                    historyContainer.visibility = View.VISIBLE
-                    clearHistoryButton.visibility = View.VISIBLE
-                    recyclerView.visibility = View.VISIBLE
-                    emptyStateView.visibility = View.GONE
-                    noInternetView.visibility = View.GONE
-                }
-            }
-        }
-    }
-
-    private fun performSearch() {
-        val query = inputEditText.text.toString()
-
-        if (query.isNotEmpty()) {
-            progressBar.visibility = View.VISIBLE
-
-            thread {
-                try {
-
-                    val tracksList = searchInteractor.makeQuery(query)
-                    runOnUiThread {
-                        progressBar.visibility = View.GONE
-
-                        if (tracksList.isNotEmpty()) {
-                            trackadapter.submitList(tracksList)
-                            emptyStateView.visibility = View.GONE
-                            noInternetView.visibility = View.GONE
-                            recyclerView.visibility = View.VISIBLE
-                            lastFailedQuery = null
-                        } else {
-                            // показываем заглушку «ничего не найдено»
-                            emptyStateView.visibility = View.VISIBLE
-                            recyclerView.visibility = View.GONE
-                            noInternetView.visibility = View.GONE
-                            trackadapter.submitList(emptyList())
-                        }
-                    }
-
-                } catch (e: Exception) {
-                    lastFailedQuery = query
-                    runOnUiThread {
-                        progressBar.visibility = View.GONE
-                        noInternetView.visibility = View.VISIBLE
-                        resetInternet.visibility = View.VISIBLE
-                        trackadapter.submitList(emptyList())
-                    }
-                }
-            }
-        } else {
-            trackadapter.submitList(emptyList())
-        }
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshHistory()
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -248,13 +202,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun retryButton() {
-        resetInternet.setOnClickListener {
-            if (!lastFailedQuery.isNullOrBlank()) {
-                resetInternet.visibility = View.GONE
-                noInternetView.visibility = View.GONE
-                inputEditText.setText(lastFailedQuery!!)
-                performSearch()
-                lastFailedQuery = null
+        binding.resetInternet.setOnClickListener {
+            if (!viewModel.lastFailedQuery.isNullOrBlank()) {
+                binding.resetInternet.visibility = View.GONE
+                binding.noInternet.visibility = View.GONE
+                binding.inputEditText.setText(viewModel.lastFailedQuery!!)
+                viewModel.search(binding.inputEditText.text.toString())
+                viewModel.lastFailedQuery = null
             }
         }
     }
@@ -267,15 +221,12 @@ class SearchActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         val restoredText = savedInstanceState.getString("EDIT_TEXT_KEY")
         if (restoredText != null) {
-            inputEditText.setText(restoredText)
+            binding.inputEditText.setText(restoredText)
         }
     }
 
     private fun clearHistory() {
-        searchInteractor.clearHistory()
-        trackadapter.submitList(emptyList())
-        historyContainer.visibility = View.GONE
-        clearHistoryButton.visibility = View.GONE
+        viewModel.clearHistory()
     }
 
     private fun handleItemClick(track: Track) {
@@ -285,18 +236,7 @@ class SearchActivity : AppCompatActivity() {
         }
         processingClick = true
 
-        val result = playTrackInteractor.workTrack(track)
-
-        if (result.shouldSearch) {
-            inputEditText.setText(result.searchQuery)
-            performSearch()
-
-            if (result.shouldHideHistory) {
-                historyContainer.visibility = View.GONE
-                clearHistoryButton.visibility = View.GONE
-            }
-        }
-
+        viewModel.onTrackClicked(track)
 
         // Отправляем поля трека в AudioPlayer
         val intent = Intent(this@SearchActivity, AudioPlayer::class.java)
@@ -313,14 +253,13 @@ class SearchActivity : AppCompatActivity() {
         searchDebouncer.cancel()
     }
 
-    private class SearchDebouncer(private val activity: SearchActivity) {
-
+   inner class SearchDebouncer() {
         private val handler = Handler(Looper.getMainLooper())
         private val findRunnable = Runnable {
-            if (activity.isFinishing || activity.isDestroyed) {
+            if (this@SearchActivity.isFinishing || this@SearchActivity.isDestroyed) {
                 return@Runnable
             }
-            activity.performSearch()
+            viewModel.search(binding.inputEditText.text.toString())
         }
 
         fun triggerSearchWithDelay(delayMs: Long) {

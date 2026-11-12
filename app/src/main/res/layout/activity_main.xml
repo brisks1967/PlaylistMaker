@@ -11,6 +11,7 @@
     >
 
     <LinearLayout
+        android:id="@+id/mainLL2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -25,6 +26,7 @@
             >
 
     <TextView
+        android:id="@+id/mainTextTop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
@@ -41,6 +43,7 @@
        <!-- Далее зона кнопок -->
 
         <LinearLayout
+            android:id="@+id/mainLL3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -51,6 +54,7 @@
             >
             <!-- Кнопка Поиск -->
         <FrameLayout
+            android:id="@+id/mainButtonSearchFL"
             style="@style/ariaButtonMain"
             >
 
