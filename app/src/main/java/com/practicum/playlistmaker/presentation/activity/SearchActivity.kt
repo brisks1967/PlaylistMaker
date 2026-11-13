@@ -7,22 +7,15 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.presentation.app.Creator
-import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityMainBinding
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.domain.api.InterfacePlayTrackInteractor
 import com.practicum.playlistmaker.domain.api.InterfaceSearchTracksInteractor
@@ -30,7 +23,7 @@ import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.ui_const.AppConst
 import com.practicum.playlistmaker.presentation.adapter_veiwholder.TrackAdapter
 import com.practicum.playlistmaker.ui.ViewModel.SearchViewModel
-import kotlin.concurrent.thread
+import com.practicum.playlistmaker.ui.ViewModel.SearchMode
 
 class SearchActivity : AppCompatActivity() {
 
@@ -48,11 +41,9 @@ class SearchActivity : AppCompatActivity() {
         Creator.createPlayTrackInteractor(applicationContext)
     }
 
-
     private val viewModel: SearchViewModel by viewModels {
         SearchViewModel.getFactory(searchInteractor,playTrackInteractor)
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,77 +51,85 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding.root)
         searchDebouncer=SearchDebouncer()
 
-        // делаем наполнение блоков экрана
-
-        binding.progressBar.visibility = View.GONE
+        // Настройка recyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerView.adapter = trackadapter
 
+            // Настройка наполнения UI
+        binding.progressBar.visibility = View.GONE
         binding.historyBox.visibility = View.GONE
         binding.clearHistoryButton.visibility = View.GONE
+        binding.noInternet.visibility = View.GONE
+        binding.resetInternet.visibility = View.GONE
+
+            //Настройка кнопки очистки Истории
         binding.clearHistoryButton.setOnClickListener {
-            clearHistory()
+            viewModel.clearHistory()
         }
 
-// Подписка на ошибки
-        viewModel.errorState.observe(this) { error ->
-            if (error != null) {
-                binding.noInternet.visibility = View.VISIBLE
-                binding.resetInternet.visibility = View.VISIBLE
-                binding.recyclerView.visibility = View.GONE
-                binding.emptyStateView.visibility = View.GONE
-                binding.progressBar.visibility = View.GONE
-            } else {
-                binding.noInternet.visibility = View.GONE
-            }
-        }
+// Подписка на изменения состояния
+        viewModel.uiState.observe(this) { state ->
+            binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
 
-        // Подписка на загрузку прогресс бар (isLoading)
-        viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
+            when (state.mode) {
+                SearchMode.SEARCH -> {
+                    // Режим поиска: показываем результаты поиска
+                    trackadapter.submitList(state.tracks)
 
-        //если активен поиск - подписка на поиск
-        viewModel.observeTracks.observe(this) { list ->
-            if (viewModel.currentQuery.value?.isNotEmpty() == true) {
-                trackadapter.submitList(list)
-                if (viewModel.errorState.value == null) {
-                if (list.isEmpty()) {
+                    // Скрываем элементы истории
                     binding.historyBox.visibility = View.GONE
                     binding.clearHistoryButton.visibility = View.GONE
-                    binding.recyclerView.visibility = View.GONE
-                    binding.emptyStateView.visibility = View.VISIBLE
-                } else {
-                    binding.historyBox.visibility = View.GONE
-                    binding.clearHistoryButton.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                    binding.emptyStateView.visibility = View.GONE
-                    binding.noInternet.visibility = View.GONE
-                }
-                } else {
-                    // При ошибке скрываем заглушку пустого поиска
-                    binding.emptyStateView.visibility = View.GONE
-                    binding.recyclerView.visibility = View.GONE
-                }
-            }
-        }
-        // если поиска НЕТ, обрабатываем только историю - подписка на историю
-        viewModel.observeHistory.observe(this) { list ->
 
-                    trackadapter.submitList(list)
-                    if (list.isEmpty()) {
+                    if (state.tracks.isEmpty()) {
+                        // Пустые результаты поиска
+                        binding.recyclerView.visibility = View.GONE
+                        binding.emptyStateView.visibility = View.VISIBLE
+                        binding.noInternet.visibility = View.GONE
+                    } else {
+                        // Есть результаты
+                        binding.recyclerView.visibility = View.VISIBLE
+                        binding.emptyStateView.visibility = View.GONE
+                        binding.noInternet.visibility = View.GONE
+                    }
+
+                    // Обработка ошибок поиска
+                    if (!state.error.isNullOrBlank()) {
+                        binding.noInternet.visibility = View.VISIBLE
+                        binding.resetInternet.visibility = View.VISIBLE
+                        binding.recyclerView.visibility = View.GONE
+                        binding.emptyStateView.visibility = View.GONE
+                    } else {
+                        binding.noInternet.visibility = View.GONE
+                    }
+                }
+
+                SearchMode.HISTORY -> {
+                    // Режим истории: показываем историю
+                    trackadapter.submitList(state.history)
+
+                    if (state.history.isEmpty()) {
+                        // Пустая история
                         binding.historyBox.visibility = View.GONE
                         binding.clearHistoryButton.visibility = View.GONE
                         binding.recyclerView.visibility = View.GONE
+                        binding.emptyStateView.visibility = View.VISIBLE
+                        binding.noInternet.visibility = View.GONE
                     } else {
+                        // Есть история
                         binding.historyBox.visibility = View.VISIBLE
                         binding.clearHistoryButton.visibility = View.VISIBLE
                         binding.recyclerView.visibility = View.VISIBLE
                         binding.emptyStateView.visibility = View.GONE
+                        binding.noInternet.visibility = View.GONE
                     }
+                }
+                else -> {
+                    Log.w("SearchActivity", "Unknown search mode: ${state.mode}")
+                }
+            }
         }
-       viewModel.loadHistory()
 
+       viewModel.loadHistory()
         // устанавливаем слушателя нажатия на Трек
         binding.clearIcon.setOnClickListener {
             binding.inputEditText.setText("")
@@ -149,7 +148,6 @@ class SearchActivity : AppCompatActivity() {
         binding.containerSearchBack.setOnClickListener {
               finish()
         }
-
 
 
         val simpleTextWatcher = object : TextWatcher {
@@ -190,7 +188,12 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.refreshHistory()
+
+         if (saveText.isNotEmpty()) {
+             viewModel.search(saveText)
+        } else {
+             viewModel.refreshHistory()
+        }
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -239,9 +242,17 @@ class SearchActivity : AppCompatActivity() {
         viewModel.onTrackClicked(track)
 
         // Отправляем поля трека в AudioPlayer
-        val intent = Intent(this@SearchActivity, AudioPlayer::class.java)
+        val intent = Intent(this@SearchActivity, AudioPlayer::class.java).apply {
+           flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
         intent.putExtra("track", track)
-        startActivity(intent)
+
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("SearchActivity", "Error starting AudioPlayer", e)
+            Toast.makeText(this, "Не удалось открыть плеер", Toast.LENGTH_SHORT).show()
+        }
 
         // Обработка задержки клика по треку
         Handler(Looper.getMainLooper()).postDelayed({
@@ -271,5 +282,4 @@ class SearchActivity : AppCompatActivity() {
             handler.removeCallbacks(findRunnable)
         }
     }
-
 }

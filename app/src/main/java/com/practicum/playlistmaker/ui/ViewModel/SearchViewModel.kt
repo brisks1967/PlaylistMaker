@@ -20,23 +20,12 @@ class SearchViewModel (
 ) : ViewModel(){
     private var historyLoaded = false
     var lastFailedQuery: String? = null // здесь запоминаем последний запрос для кнопки Обновить
-
     private var cachedHistory: List<Track> = emptyList()
 
     val currentQuery = MutableLiveData<String>("")
 
-    // данные для поиска
-    private val searchLiveData= MutableLiveData<List<Track>>(emptyList())
-    val observeTracks: LiveData<List<Track>> get()= searchLiveData
-    // данные для истории
-    private val historyLiveData = MutableLiveData<List<Track>>(emptyList())
-    val observeHistory: LiveData<List<Track>> get() = historyLiveData
-
-    private val errorState1 = MutableLiveData<Exception?>() // это обработка ошибок
-    val errorState: LiveData<Exception?> = errorState1
-
-    private val isLoading1 = MutableLiveData<Boolean>()   // это состояние прогресс-бара
-    val isLoading: LiveData<Boolean> = isLoading1
+    private val uiState1 = MutableLiveData<SearchUiState>(SearchUiState(mode = SearchMode.HISTORY) ) // общее состояние UI Search-активити
+    val uiState: LiveData<SearchUiState> = uiState1
 
     companion object {
         fun getFactory(interactor: InterfaceSearchTracksInteractor,
@@ -49,28 +38,41 @@ class SearchViewModel (
 
     fun search(query: String) {
         currentQuery.value = query
-        viewModelScope.launch {
-            errorState1.value = null // Сбрасываем ошибки
-            isLoading1.value = true // Прогресс бар показывается
-
-            try {
-                val results = withContext(Dispatchers.IO) {
-                    searchInteractor.makeQuery(query)
-                }
-                searchLiveData.value = results
-            } catch (e: Exception) {
-                errorState1.value = e // Отправляем ошибку в LiveData
-                searchLiveData.value = emptyList()
-                lastFailedQuery = query
-            } finally {
-                isLoading1.value = false // Скрываем прогресс бар
-            }
+        uiState1.value = uiState1.value?.copy(
+            mode = SearchMode.SEARCH,
+            isLoading = true,
+            error = null,
+            tracks = emptyList(),
+            history = emptyList()
+        )?: SearchUiState(mode = SearchMode.SEARCH, isLoading = true)
+                viewModelScope.launch {
+                    try {
+                        val results = withContext(Dispatchers.IO) {
+                            searchInteractor.makeQuery(query)
+                        }
+                        uiState1.value = uiState1.value?.copy(
+                            isLoading = false,
+                            tracks = results,
+                            error = null
+                        ) ?: SearchUiState(
+                            isLoading = false,
+                            tracks = results,
+                            mode = SearchMode.SEARCH
+                        )
+                    } catch (e: Exception) {
+                        uiState1.value = uiState1.value?.copy(
+                            isLoading = false,
+                            tracks = emptyList(),
+                            error = e.message ?: "Ошибка поиска"
+                        ) ?: SearchUiState(isLoading = false, error = e.message, mode = SearchMode.SEARCH)
+                        lastFailedQuery = query
+                    }
         }
     }
 
     fun loadHistory (){
         if (historyLoaded) {
-            historyLiveData.value = cachedHistory
+            updateUiStateWithHistory(cachedHistory)
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -78,14 +80,27 @@ class SearchViewModel (
             cachedHistory = history
             historyLoaded = true
             withContext(Dispatchers.Main) {
-                historyLiveData.value = history
+                updateUiStateWithHistory(history)
             }
         }
     }
 
+    private fun updateUiStateWithHistory(history: List<Track>) {
+        uiState1.value = uiState1.value?.copy(
+            mode = SearchMode.HISTORY,
+            history = history,
+            isLoading = false,
+            tracks = emptyList()
+        ) ?: SearchUiState(mode = SearchMode.HISTORY, history = history)
+    }
+
     fun clearSearchAndLoadHistory() {
-        searchLiveData.value = emptyList() // Очистка текущих результатов
-        loadHistory() // Запуск загрузки истории из локального хранилища
+        uiState1.value = uiState1.value?.copy(
+            mode = SearchMode.HISTORY,
+            tracks = emptyList(),
+            isLoading = false
+        ) ?: SearchUiState(mode = SearchMode.HISTORY)
+        loadHistory()
     }
     fun clearHistory() {
         searchInteractor.clearHistory()

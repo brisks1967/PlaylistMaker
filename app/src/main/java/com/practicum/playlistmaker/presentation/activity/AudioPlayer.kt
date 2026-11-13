@@ -23,6 +23,7 @@ import com.practicum.playlistmaker.databinding.ActivityMainBinding
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.ui_const.AppConst
 import com.practicum.playlistmaker.ui.ViewModel.AudioPlayerViewModel
+import com.practicum.playlistmaker.ui.ViewModel.AudioPlayerViewModelFactory
 import com.practicum.playlistmaker.ui.ViewModel.PlayerState
 import com.practicum.playlistmaker.ui.ViewModel.PlayerUiState
 import com.practicum.playlistmaker.ui.ViewModel.SearchViewModel
@@ -32,11 +33,10 @@ import kotlin.getValue
 class AudioPlayer  : AppCompatActivity() {
 
     private lateinit var binding: ActivityAudioplayerBinding
+    private val viewModel: AudioPlayerViewModel by viewModels {
+        AudioPlayerViewModelFactory()
+    }
 
-    private var timeText: String? = "00:00"
-    private var isProcessingPlayback = false
-
-    private val viewModel: AudioPlayerViewModel by viewModels ()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,31 +49,51 @@ class AudioPlayer  : AppCompatActivity() {
         }
 
             // получаем поля трека из SearchActivity
-        val track = intent.getParcelableExtra("track") as Track?
+        val track = intent.getParcelableExtra<Track>("track")
         if (track == null) {
             Toast.makeText(this, "Не удалось загрузить трек", Toast.LENGTH_SHORT).show()
-            finish()
+         finish()
             return
         }
+
         setupClickListeners()
         viewModel.setTrack(track)
-        viewModel.statePlayer.observe(this) { state ->
-            //  Кнопка play/pause
-            when (state.playerState) {
-                PlayerState.STATE_PLAYING ->
-                    binding.buttonPlayAP.setImageResource(R.drawable.button_pause)
-                else ->
-                    binding.buttonPlayAP.setImageResource(R.drawable.button_play_song)
-            }
-            binding.buttonPlayAP.isEnabled = state.playerState != PlayerState.STATE_DEFAULT
 
-            // Время
-            val timeString = SimpleDateFormat("mm:ss", Locale.getDefault()).format(state.currentPositionMs)
-            binding.timeAP.text = timeString
+        viewModel.trackData.observe(this) { trackModel ->
+            if (trackModel != null) {
+                makeUI(trackModel)
+            }
         }
 
+        viewModel.statePlayer.observe(this) { state ->
+            //Обработка ОШИБКИ
+            if (state.playerState == PlayerState.STATE_ERROR) {
+                Toast.makeText(this, "Ошибка воспроизведения", Toast.LENGTH_SHORT).show()
+                binding.buttonPlayAP.isEnabled = false // Блокируем кнопку
+                binding.buttonPlayAP.setImageResource(R.drawable.button_play_song)
+                return@observe // Прерываем
+            }
 
-        makeUI(track)
+            //Обновляем кнопку Play/Pause
+            val isPlaying = state.playerState == PlayerState.STATE_PLAYING
+            binding.buttonPlayAP.setImageResource(
+                if (isPlaying) R.drawable.button_pause else R.drawable.button_play_song
+            )
+
+            // Блокируем кнопку, если плеер не готов (DEFAULT)
+            binding.buttonPlayAP.isEnabled = state.playerState != PlayerState.STATE_DEFAULT
+
+            //форматирование времени
+            val safePosition = if (state.currentPositionMs < 0) 0 else state.currentPositionMs
+            try {
+                val timeString = SimpleDateFormat("mm:ss", Locale.getDefault()).format(safePosition)
+                binding.timeAP.text = timeString
+            } catch (e: Exception) {
+                Log.e("AudioPlayer", "Ошибка форматирования времени", e)
+                binding.timeAP.text = "00:00"
+            }
+        }
+
     }
 
 
@@ -81,22 +101,17 @@ class AudioPlayer  : AppCompatActivity() {
         binding.buttonBackAP.setOnClickListener {
             finish() // Закрыть этот экран
         }
-
         binding.buttonAddAP.setOnClickListener {
             Log.d("Player", "Нажата кнопка  - Добавить в плейлист!")
         }
-
         binding.buttonPlayAP.setOnClickListener {
             viewModel.playbackControl()
             Log.d("Player", "Нажата кнопка Play!")
         }
-
         binding.buttonFavouritesAP.setOnClickListener {
             Log.d("Player", "Нажата кнопка Добавить в избранное!")
         }
     }
-
-
 
     private fun makeUI(track: Track) {
 
@@ -154,12 +169,12 @@ class AudioPlayer  : AppCompatActivity() {
             .into(imageView)    // Куда вставить картинку
     }
 
-
     override fun onPause() {
         super.onPause()
 
         viewModel.pauseOnScreenHide()
     }
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         viewModel.statePlayer.value?.let { state ->
