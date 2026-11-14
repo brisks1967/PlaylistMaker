@@ -2,7 +2,7 @@ package com.practicum.playlistmaker.presentation.activity
 
 import android.content.Context
 import android.icu.text.SimpleDateFormat
-import android.media.MediaPlayer
+
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -13,236 +13,144 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivityAudioplayerBinding
+import com.practicum.playlistmaker.databinding.ActivityMainBinding
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.ui_const.AppConst
+import com.practicum.playlistmaker.ui.ViewModel.AudioPlayerViewModel
+import com.practicum.playlistmaker.ui.ViewModel.AudioPlayerViewModelFactory
+import com.practicum.playlistmaker.ui.ViewModel.PlayerState
+import com.practicum.playlistmaker.ui.ViewModel.PlayerUiState
+import com.practicum.playlistmaker.ui.ViewModel.SearchViewModel
 import java.util.Locale
+import kotlin.getValue
 
 class AudioPlayer  : AppCompatActivity() {
 
-    private var playerState = AppConst.STATE_DEFAULT
-    private lateinit var backButton2: ImageView
-    private lateinit var imageTrackAPView: ImageView
-    private lateinit var buttonAddAPView: ImageButton
-    private lateinit var buttonPlayAPView: ImageButton
-    private lateinit var buttonFavouritesAPView: ImageButton
-
-    private lateinit var titleSongView: TextView
-    private lateinit var nameArtistView: TextView
-    private lateinit var durationTrackView: TextView
-    private lateinit var nameAlbumView: TextView
-    private lateinit var yearTrackView: TextView
-    private lateinit var genreTrackView: TextView
-    private lateinit var countryTrackView: TextView
-
-    private lateinit var secondsTextView: TextView
-
-    private var mediaPlayer = MediaPlayer()
-    private var uri: Uri? = null
-    private var timeText: String? = "00:00"
-    private var mainThreadHandler: Handler? = null
-    private val updateTimerRunnable = object :  Runnable {
-        override fun run() {
-            val currentPosition = mediaPlayer.currentPosition
-
-                timeText = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
-                secondsTextView.text = timeText
-
-            if (mediaPlayer.isPlaying) {
-                mainThreadHandler?.postDelayed(this, AppConst.THREAD_DELAY)
-            }
-        }
+    private lateinit var binding: ActivityAudioplayerBinding
+    private val viewModel: AudioPlayerViewModel by viewModels {
+        AudioPlayerViewModelFactory()
     }
-
-    private var isProcessingPlayback = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_audioplayer)
+        binding = ActivityAudioplayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.buttonPlayAP.setOnClickListener {
+            Log.d("AudioPlayer", "Клик по Play! Текущее состояние: ${viewModel.statePlayer.value}")
+            viewModel.playbackControl()
+        }
 
             // получаем поля трека из SearchActivity
-        val track = intent.getParcelableExtra("track") as Track?
-
+        val track = intent.getParcelableExtra<Track>("track")
         if (track == null) {
             Toast.makeText(this, "Не удалось загрузить трек", Toast.LENGTH_SHORT).show()
-            finish()
+         finish()
             return
         }
-        // Объявляем поток - для secondsTextView
-        mainThreadHandler = Handler(Looper.getMainLooper())
 
-        backButton2 = findViewById<ImageView>(R.id.buttonBackAP)
-        imageTrackAPView = findViewById<ImageView>(R.id.imageTrackAP)
-        buttonAddAPView = findViewById<ImageButton>(R.id.buttonAddAP)
-        buttonPlayAPView = findViewById<ImageButton>(R.id.buttonPlayAP)
-        buttonFavouritesAPView = findViewById<ImageButton>(R.id.buttonFavouritesAP)
-
-        titleSongView = findViewById(R.id.nameSongAP)
-        nameArtistView = findViewById(R.id.nameGroupAP)
-        durationTrackView = findViewById(R.id.durationTextAP)
-        nameAlbumView = findViewById(R.id.albumTextAP)
-        yearTrackView = findViewById(R.id.yearTextAP)
-        genreTrackView = findViewById(R.id.genreTextAP)
-        countryTrackView = findViewById(R.id.countryTextAP)
-
-        secondsTextView= findViewById(R.id.timeAP)
-
-        makeUI(track)
-        preparePlayer()
         setupClickListeners()
+        viewModel.setTrack(track)
+
+        viewModel.trackData.observe(this) { trackModel ->
+            if (trackModel != null) {
+                makeUI(trackModel)
+            }
+        }
+
+        viewModel.statePlayer.observe(this) { state ->
+            //Обработка ОШИБКИ
+            if (state.playerState == PlayerState.STATE_ERROR) {
+                Toast.makeText(this, "Ошибка воспроизведения", Toast.LENGTH_SHORT).show()
+                binding.buttonPlayAP.isEnabled = false // Блокируем кнопку
+                binding.buttonPlayAP.setImageResource(R.drawable.button_play_song)
+                return@observe // Прерываем
+            }
+
+            //Обновляем кнопку Play/Pause
+            val isPlaying = state.playerState == PlayerState.STATE_PLAYING
+            binding.buttonPlayAP.setImageResource(
+                if (isPlaying) R.drawable.button_pause else R.drawable.button_play_song
+            )
+
+            // Блокируем кнопку, если плеер не готов (DEFAULT)
+            binding.buttonPlayAP.isEnabled = state.playerState != PlayerState.STATE_DEFAULT
+
+            //форматирование времени
+            val safePosition = if (state.currentPositionMs < 0) 0 else state.currentPositionMs
+            try {
+                val timeString = SimpleDateFormat("mm:ss", Locale.getDefault()).format(safePosition)
+                binding.timeAP.text = timeString
+            } catch (e: Exception) {
+                Log.e("AudioPlayer", "Ошибка форматирования времени", e)
+                binding.timeAP.text = "00:00"
+            }
+        }
+
     }
 
 
     private fun setupClickListeners() {
-        backButton2.setOnClickListener {
+        binding.buttonBackAP.setOnClickListener {
             finish() // Закрыть этот экран
         }
-
-        buttonAddAPView.setOnClickListener {
+        binding.buttonAddAP.setOnClickListener {
             Log.d("Player", "Нажата кнопка  - Добавить в плейлист!")
         }
-
-        buttonPlayAPView.setOnClickListener {
-            playbackControl()
+        binding.buttonPlayAP.setOnClickListener {
+            viewModel.playbackControl()
             Log.d("Player", "Нажата кнопка Play!")
         }
-
-        buttonFavouritesAPView.setOnClickListener {
+        binding.buttonFavouritesAP.setOnClickListener {
             Log.d("Player", "Нажата кнопка Добавить в избранное!")
         }
     }
 
-    private fun preparePlayer() {
-
-        uri?.let { validUri ->
-            try {
-                // validUri теперь гарантированно не null
-                mediaPlayer.setDataSource(this, validUri)
-
-                mediaPlayer.setOnPreparedListener {
-                    buttonPlayAPView.isEnabled = true
-                    playerState = AppConst.STATE_PREPARED
-                }
-                mediaPlayer.setOnCompletionListener {
-                    playerState = AppConst.STATE_PREPARED
-                    mainThreadHandler?.removeCallbacks(updateTimerRunnable)
-                    secondsTextView.text = getString(R.string.timerZeroAP)
-
-                    buttonPlayAPView.setImageResource(R.drawable.button_play_song)
-                    buttonPlayAPView.isEnabled = true
-                }
-                mediaPlayer.prepareAsync()
-
-            } catch (e: Exception) {
-                //  формат неверный
-                e.printStackTrace()
-                Toast.makeText(this, "Не удалось загрузить аудиофайл", Toast.LENGTH_SHORT).show()
-                buttonPlayAPView.isEnabled = false
-            }
-        }
-    }
-
-    private fun startPlayer() {
-        mediaPlayer.start()
-           playerState = AppConst.STATE_PLAYING
-
-           mainThreadHandler?.post(updateTimerRunnable)
-        buttonPlayAPView.setImageResource(R.drawable.button_pause)
-    }
-
-    private fun pausePlayer() {
-        mediaPlayer.pause()
-        playerState = AppConst.STATE_PAUSED
-        mainThreadHandler?.removeCallbacks(updateTimerRunnable)
-        buttonPlayAPView.setImageResource(R.drawable.button_play_song)
-    }
-
-    private fun playbackControl() {
-        if (isProcessingPlayback) {
-            Log.d("Player", "Игнорируем клик: обработка уже идет")
-            return
-        }
-        isProcessingPlayback = true
-
-        when(playerState) {
-            AppConst.STATE_PLAYING -> {
-                pausePlayer()
-            }
-            AppConst.STATE_PREPARED, AppConst.STATE_PAUSED -> {
-                startPlayer()
-            }
-        }
-// задержка нажатия на кнопку PLAY
-        mainThreadHandler?.postDelayed(Runnable {isProcessingPlayback = false}, AppConst.THREAD_DELAY_PLAY_BUTTON)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        pausePlayer()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mainThreadHandler?.removeCallbacks(updateTimerRunnable)
-        mediaPlayer.release()
-        mainThreadHandler = null
-    }
-
-
     private fun makeUI(track: Track) {
 
-        titleSongView.text = track.trackName
-        nameArtistView.text = track.artistName
+        binding.nameSongAP.text = track.trackName
+        binding.nameGroupAP.text = track.artistName
 
         val durationMs = track.trackTimeMillis
         val minutes = durationMs / (1000 * 60)
         val seconds = (durationMs / 1000) % 60
         val formattedDuration = String.format("%02d:%02d", minutes, seconds)
-        durationTrackView.text = formattedDuration
+        binding.durationTextAP.text = formattedDuration
 
 
-        genreTrackView.text = track.primaryGenreName
-        countryTrackView.text = track.country
+        binding.genreTextAP.text = track.primaryGenreName
+        binding.countryTextAP.text = track.country
 
         // обрабатываем Альбом
-        nameAlbumView.text = ""
-        nameAlbumView.visibility = View.GONE
+        binding.albumTextAP.text = ""
+        binding.albumTextAP.visibility = View.GONE
         if (!track.collectionName.isNullOrBlank()) {
-            nameAlbumView.text = track.collectionName
-            nameAlbumView.visibility = View.VISIBLE
+            binding.albumTextAP.text = track.collectionName
+            binding.albumTextAP.visibility = View.VISIBLE
         }
 
        // обрабатываем Год релиза - нужен год, а не вся дата
-        yearTrackView.text = ""
-        yearTrackView.visibility = View.GONE
+        binding.yearTextAP.text = ""
+        binding.yearTextAP.visibility = View.GONE
         val year = track.releaseDate?.substring(0, 4)
         if (!year.isNullOrBlank()) {
-            yearTrackView.text = year
-            yearTrackView.visibility = View.VISIBLE
+            binding.yearTextAP.text = year
+            binding.yearTextAP.visibility = View.VISIBLE
         } else {
-            yearTrackView.text = ""
-            yearTrackView.visibility = View.GONE
+            binding.yearTextAP.text = ""
+            binding.yearTextAP.visibility = View.GONE
         }
 
         //Обложка -   замена URL - картинки 100х100 на 512х512
         val coverUrl = track.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
-        loadCoverImageGlideAP(this@AudioPlayer,imageTrackAPView,coverUrl)
-
-
-        val url : String? = track.previewUrl
-        if (!url.isNullOrBlank()) {
-            try {
-                uri = Uri.parse(url)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        } else {
-            // Ссылки нет (null или пустая). Ничего не делаем
-          }
+        loadCoverImageGlideAP(this@AudioPlayer,binding.imageTrackAP,coverUrl)
     }
 
     // Логика расчета радиуса для AP вынесена сюда
@@ -259,6 +167,37 @@ class AudioPlayer  : AppCompatActivity() {
             .placeholder(R.drawable.image_hint_ap) // Что показать, пока грузится
             .transform(RoundedCorners(radiusPx)) // скругления углов
             .into(imageView)    // Куда вставить картинку
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        viewModel.pauseOnScreenHide()
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        viewModel.statePlayer.value?.let { state ->
+            binding.buttonPlayAP.isEnabled = state.playerState != PlayerState.STATE_DEFAULT
+            binding.buttonPlayAP.setImageResource(
+                if (state.playerState == PlayerState.STATE_PLAYING)
+                    R.drawable.button_pause
+                else
+                    R.drawable.button_play_song
+            )
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val state = viewModel.statePlayer.value ?: return
+        binding.buttonPlayAP.isEnabled = state.playerState != PlayerState.STATE_DEFAULT
+        binding.buttonPlayAP.setImageResource(
+            if (state.playerState == PlayerState.STATE_PLAYING)
+                R.drawable.button_pause
+            else
+                R.drawable.button_play_song
+        )
     }
 
 }

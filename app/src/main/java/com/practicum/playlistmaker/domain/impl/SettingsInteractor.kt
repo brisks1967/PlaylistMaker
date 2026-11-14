@@ -12,4 +12,6 @@ class SettingsInteractor (private val themeRepository: ThemeRepository){
     fun setDarkTheme(isEnabled: Boolean) {
         themeRepository.setDarkThemeEnabled(isEnabled)
     }
+
+    fun getRepo(): ThemeRepository = themeRepository
 }

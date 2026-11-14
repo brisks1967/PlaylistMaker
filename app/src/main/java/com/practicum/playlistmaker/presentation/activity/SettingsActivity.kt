@@ -5,66 +5,58 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.presentation.app.App
 import com.practicum.playlistmaker.presentation.app.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivityMainBinding
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import com.practicum.playlistmaker.ui.ViewModel.SearchViewModel
+import com.practicum.playlistmaker.ui.ViewModel.SettingsViewModel
+import kotlin.getValue
+import com.practicum.playlistmaker.ui.ViewModel.SettingsViewModelFactory
+
 
 
 class SettingsActivity : AppCompatActivity()  {
 
-
+    private lateinit var binding: ActivitySettingsBinding
+    val viewModel: SettingsViewModel by viewModels {
+        SettingsViewModelFactory(Creator.createThemeInteractor(this).getRepo())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+        val themeSwitcher = binding.themeSwitch
 
-            // получаем состояние темы через репозиторий
-           val isDark = Creator.createThemeInteractor(this)
+            // получаем состояние темы
+        viewModel.themeState.observe(this) { isDark ->
+            if (themeSwitcher.isChecked != isDark) {
+                themeSwitcher.isChecked = isDark
+            }
+        }
+        // грузим текущее состояние темы из viewModel
+        viewModel.loadTheme()
 
             // Обработка кнопки «Назад»
-            val backButton = findViewById<LinearLayout>(R.id.btn_settings)
+        binding.btnSettings.setOnClickListener {
+            finish()
+        }
 
-            backButton.setOnClickListener {
-                val intent = Intent(this, MainActivity::class.java)
-                finish()
-            }
+        // Обработка кнопки «Темная тема»
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+             viewModel.setTheme(checked) // Сохраняем состояние темы в viewModel
+            (application as App).switchTheme(checked) // Меняем тему
+        }
 
-           // Обработка кнопки «Темная тема»
+        binding.btnSend.setOnClickListener { shareApp() } // Обработка кнопки «Поделиться приложением»
+        binding.btnLetter.setOnClickListener { writeLetter() } // Обработка кнопки «Написать в поддержку»
+        binding.btnAccept.setOnClickListener { readAcceptText() } // Обработка кнопки «Пользовательское соглашение»
 
-            val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitch)
-
-
-            val isDarkThemeSaved = isDark.isDarkThemeEnabled()
-
-            themeSwitcher.setChecked(isDarkThemeSaved)
-
-            themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-                (application as App).switchTheme(checked)
-                recreate()
-            }
-
-            // Обработка кнопки «Поделиться приложением»
-            val sendButton: LinearLayout = findViewById<LinearLayout>(R.id.btn_send)
-
-            sendButton.setOnClickListener {
-                shareApp()
-            }
-
-            // Обработка кнопки «Написать в поддержку»
-            val sendLetter: LinearLayout = findViewById<LinearLayout>(R.id.btn_letter)
-
-            sendLetter.setOnClickListener {
-                writeLetter()
-            }
-
-            // Обработка кнопки «Пользовательское соглашение»
-            val acceptEU: LinearLayout = findViewById<LinearLayout>(R.id.btn_accept)
-
-            acceptEU.setOnClickListener {
-                readAcceptText()
-            }
         }
 
             private fun shareApp() {
@@ -95,4 +87,6 @@ class SettingsActivity : AppCompatActivity()  {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
     }
+
+
 }
