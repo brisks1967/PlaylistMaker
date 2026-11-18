@@ -2,40 +2,26 @@ package com.practicum.playlistmaker.presentation.activity
 
 import android.content.Context
 import android.icu.text.SimpleDateFormat
-
-import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityAudioplayerBinding
-import com.practicum.playlistmaker.databinding.ActivityMainBinding
 import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.presentation.ui_const.AppConst
 import com.practicum.playlistmaker.ui.ViewModel.AudioPlayerViewModel
-import com.practicum.playlistmaker.ui.ViewModel.AudioPlayerViewModelFactory
 import com.practicum.playlistmaker.ui.ViewModel.PlayerState
-import com.practicum.playlistmaker.ui.ViewModel.PlayerUiState
-import com.practicum.playlistmaker.ui.ViewModel.SearchViewModel
+import org.koin.core.component.KoinComponent
 import java.util.Locale
 import kotlin.getValue
 
-class AudioPlayer  : AppCompatActivity() {
-
+class AudioPlayer  : AppCompatActivity(), KoinComponent {
     private lateinit var binding: ActivityAudioplayerBinding
-    private val viewModel: AudioPlayerViewModel by viewModels {
-        AudioPlayerViewModelFactory()
-    }
+    private val viewModel: AudioPlayerViewModel by lazy { getKoin().get() }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

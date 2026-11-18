@@ -3,29 +3,20 @@ package com.practicum.playlistmaker.presentation.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.presentation.app.App
-import com.practicum.playlistmaker.presentation.app.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityMainBinding
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
-import com.practicum.playlistmaker.ui.ViewModel.SearchViewModel
 import com.practicum.playlistmaker.ui.ViewModel.SettingsViewModel
 import kotlin.getValue
-import com.practicum.playlistmaker.ui.ViewModel.SettingsViewModelFactory
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 
-
-class SettingsActivity : AppCompatActivity()  {
-
+class SettingsActivity : AppCompatActivity(), KoinComponent  {
     private lateinit var binding: ActivitySettingsBinding
-    val viewModel: SettingsViewModel by viewModels {
-        SettingsViewModelFactory(Creator.createThemeInteractor(this).getRepo())
-    }
+    private val viewModel: SettingsViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -87,6 +78,4 @@ class SettingsActivity : AppCompatActivity()  {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
     }
-
-
 }

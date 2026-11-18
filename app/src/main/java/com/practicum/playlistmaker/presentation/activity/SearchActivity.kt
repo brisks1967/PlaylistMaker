@@ -15,35 +15,28 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.presentation.app.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.domain.api.InterfacePlayTrackInteractor
-import com.practicum.playlistmaker.domain.api.InterfaceSearchTracksInteractor
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.ui_const.AppConst
 import com.practicum.playlistmaker.presentation.adapter_veiwholder.TrackAdapter
 import com.practicum.playlistmaker.ui.ViewModel.SearchViewModel
 import com.practicum.playlistmaker.ui.ViewModel.SearchMode
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.context.startKoin
+import org.koin.core.Koin
 
-class SearchActivity : AppCompatActivity() {
 
+class SearchActivity : AppCompatActivity(), KoinComponent  {
     private lateinit var binding: ActivitySearchBinding
     var processingClick = false
     var saveText : String = ""
     private val trackadapter = TrackAdapter { clickedTrack -> handleItemClick(clickedTrack) }
 
     private lateinit var searchDebouncer: SearchDebouncer
+    private val viewModel: SearchViewModel by lazy { getKoin().get() }
 
-    private val searchInteractor: InterfaceSearchTracksInteractor by lazy {
-        Creator.createSearchTracksInteractor(applicationContext)
-    }
-     private val playTrackInteractor: InterfacePlayTrackInteractor by lazy {
-        Creator.createPlayTrackInteractor(applicationContext)
-    }
-
-    private val viewModel: SearchViewModel by viewModels {
-        SearchViewModel.getFactory(searchInteractor,playTrackInteractor)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
