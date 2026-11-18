@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
 class SearchViewModel (
     private val searchInteractor: InterfaceSearchTracksInteractor,
     private val playTrackInteractor: InterfacePlayTrackInteractor
@@ -26,15 +27,6 @@ class SearchViewModel (
 
     private val uiState1 = MutableLiveData<SearchUiState>(SearchUiState(mode = SearchMode.HISTORY) ) // общее состояние UI Search-активити
     val uiState: LiveData<SearchUiState> = uiState1
-
-    companion object {
-        fun getFactory(interactor: InterfaceSearchTracksInteractor,
-                       playTrackInteractor: InterfacePlayTrackInteractor): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SearchViewModel(interactor,playTrackInteractor)
-            }
-        }
-    }
 
     fun search(query: String) {
         currentQuery.value = query

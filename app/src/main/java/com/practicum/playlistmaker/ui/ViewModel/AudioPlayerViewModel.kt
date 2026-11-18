@@ -107,15 +107,4 @@ class AudioPlayerViewModel(
                 super.onCleared()
             }
 }
-class AudioPlayerViewModelFactory : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AudioPlayerViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            //Создаем реализацию (MediaPlayerImpl)
-            val player = MediaPlayerImpl()
-            //Передаем её в ViewModel
-            return AudioPlayerViewModel(player) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+

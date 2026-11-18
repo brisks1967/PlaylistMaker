@@ -20,13 +20,3 @@ class SettingsViewModel (private val themeRepository: ThemeRepository) : ViewMod
         themeState0.value = isEnabled
     }
 }
-
-class SettingsViewModelFactory(private val themeRepository: ThemeRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return SettingsViewModel(themeRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
